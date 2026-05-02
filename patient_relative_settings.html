@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt tài khoản - CareLoop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%),
+                        linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 390px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            box-shadow: 0px 24px 20px rgba(25, 28, 29, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3a8a;
+            letter-spacing: -0.45px;
+            line-height: 28px;
+            white-space: nowrap;
+        }
+
+        .header-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            background: #e1e3e4;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding: 96px 24px 96px 24px;
+            max-width: 672px;
+            width: 100%;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: #191c1d;
+            letter-spacing: -0.75px;
+            line-height: 36px;
+        }
+
+        .section-description {
+            font-size: 16px;
+            font-weight: normal;
+            color: #424752;
+            line-height: 26px;
+        }
+
+        /* Grid Container */
+        .cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Relative Contact Card */
+        .relative-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0px 24px 20px rgba(25, 28, 29, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .relative-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .relative-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .relative-icon-box {
+            width: 46.2px;
+            height: 56px;
+            border-radius: 16px;
+            background: #d6e3ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .relative-icon {
+            width: 24.063px;
+            height: 26.25px;
+        }
+
+        .relative-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .relative-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .relative-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 28px;
+            white-space: nowrap;
+        }
+
+        .relative-phone {
+            font-size: 16px;
+            font-weight: 500;
+            color: #424752;
+            line-height: 24px;
+            white-space: nowrap;
+        }
+
+        .connection-badge {
+            background: #a0f399;
+            border-radius: 9999px;
+            padding: 4px 6px 4px 6px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .badge-icon {
+            width: 11.667px;
+            height: 11.667px;
+        }
+
+        .badge-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .badge-text {
+            font-size: 12px;
+            font-weight: bold;
+            color: #217128;
+            line-height: 16px;
+            width: 64px;
+        }
+
+        /* Notification Setting */
+        .notification-setting {
+            background: #f3f4f5;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .notification-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .notification-icon {
+            width: 20px;
+            height: 20.05px;
+        }
+
+        .notification-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .notification-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #191c1d;
+            line-height: 24px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            border-radius: 9999px;
+            background: #00488d;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.off {
+            background: #d1d5db;
+        }
+
+        .toggle-slider {
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            background: white;
+            border: 2px solid white;
+            position: absolute;
+            top: 2px;
+            left: 22px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toggle-switch.off .toggle-slider {
+            left: 2px;
+        }
+
+        /* Add Relative Card */
+        .add-relative-card {
+            background: #edeeef;
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .add-icon-box {
+            width: 64px;
+            height: 80px;
+            padding-bottom: 16px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .add-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 9999px;
+            background: #e1e3e4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-icon img {
+            width: 27.5px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .add-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #191c1d;
+            text-align: center;
+            line-height: 28px;
+            padding-bottom: 8px;
+        }
+
+        .add-description {
+            font-size: 14px;
+            font-weight: normal;
+            color: #424752;
+            text-align: center;
+            line-height: 20px;
+            padding-bottom: 24px;
+        }
+
+        .add-button {
+            background: linear-gradient(162.39deg, #004891 0%, #005fb8 100%);
+            border: none;
+            border-radius: 9999px;
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -4px rgba(0, 0, 0, 0.1);
+            line-height: 24px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .add-button:hover {
+            opacity: 0.9;
+        }
+
+        /* Privacy Card */
+        .privacy-card {
+            background: #1e3a8a;
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .privacy-background {
+            position: absolute;
+            width: 128px;
+            height: 128px;
+            border-radius: 9999px;
+            background: #005fb8;
+            opacity: 0.2;
+            right: -64px;
+            top: -64px;
+            pointer-events: none;
+        }
+
+        .privacy-icon {
+            width: 40px;
+            height: 45px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .privacy-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .privacy-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .privacy-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 20px;
+        }
+
+        .privacy-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1.2px;
+            line-height: 16px;
+            text-transform: uppercase;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: #f3f4f5;
+            border: 1px dashed rgba(194, 198, 212, 0.15);
+            border-radius: 24px;
+            padding: 33px 25px 25px 25px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .how-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            padding-top: 0;
+        }
+
+        .how-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .how-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .how-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 20px;
+        }
+
+        .how-description {
+            font-size: 14px;
+            font-weight: normal;
+            color: #424752;
+            line-height: 22.75px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            height: 89px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+        }
+
+        .nav-icon {
+            width: 16px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 15px;
+            text-align: center;
+        }
+
+        .nav-item.active .nav-label {
+            color: #1e3a8a;
+        }
+
+        .nav-item:not(.active) .nav-label {
+            color: #64748b;
+        }
+
+        .nav-profile {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .nav-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Scrollbar styling */
+        .main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+            }
+
+            .header {
+                width: 100%;
+            }
+
+            .bottom-nav {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">Cài đặt tài khoản người dùng</div>
+            <div class="header-profile">
+                <img src="https://www.figma.com/api/mcp/asset/a5dc513e-49b8-4064-8165-79fa8cf28abf" alt="Profile">
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h1 class="section-title">Người thân hỗ trợ</h1>
+                <p class="section-description">Người thân sẽ nhận được thông báo nếu bác chưa phản hồi lịch khám sau 48 giờ.</p>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="cards-grid">
+                <!-- Relative Contact Card -->
+                <div class="relative-card">
+                    <div class="relative-header">
+                        <div class="relative-info">
+                            <div class="relative-icon-box">
+                                <div class="relative-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/0b5a8f8a-f07f-4248-9fca-a9fa43b571cd" alt="Relative">
+                                </div>
+                            </div>
+                            <div class="relative-details">
+                                <div class="relative-name">Anh Tuấn (Con trai)</div>
+                                <div class="relative-phone">090xxxx123</div>
+                            </div>
+                        </div>
+                        <div class="connection-badge">
+                            <div class="badge-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/99414d00-0012-4eae-aad6-dc9165fa7a38" alt="Connected">
+                            </div>
+                            <span class="badge-text">Đã kết nối</span>
+                        </div>
+                    </div>
+
+                    <div class="notification-setting">
+                        <div class="notification-info">
+                            <div class="notification-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/cc6a7925-20cf-43f4-b42f-675ee31d6f76" alt="Notification">
+                            </div>
+                            <div class="notification-text">Cho phép thông báo lịch tái khám</div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleNotification(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Relative Card -->
+                <div class="add-relative-card">
+                    <div class="add-icon-box">
+                        <div class="add-icon">
+                            <img src="https://www.figma.com/api/mcp/asset/ae53e829-9bc0-4c50-ab6b-e4c9e65f9bb5" alt="Add">
+                        </div>
+                    </div>
+                    <h2 class="add-title">Thêm người thân mới</h2>
+                    <p class="add-description">Bác có thể thêm tối đa 3 người thân để cùng theo dõi sức khỏe.</p>
+                    <button class="add-button" onclick="addRelative()">Thêm ngay</button>
+                </div>
+
+                <!-- Privacy Card -->
+                <div class="privacy-card">
+                    <div class="privacy-background"></div>
+                    <div class="privacy-icon">
+                        <img src="https://www.figma.com/api/mcp/asset/f7cfc71f-2d2f-4d46-9f3c-e773baccfa3b" alt="Privacy">
+                    </div>
+                    <div class="privacy-content">
+                        <div class="privacy-title">Thông tin sức khỏe của bác luôn được bảo mật.</div>
+                        <div class="privacy-label">PRIVACY FIRST</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <div class="how-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/2be8743d-55b1-4f07-9984-72334d99abec" alt="Info">
+                </div>
+                <div class="how-content">
+                    <div class="how-title">Cách thức hoạt động</div>
+                    <div class="how-description">Khi có lịch tái khám mới, hệ thống sẽ gửi thông báo ưu tiên cho bác. Nếu bác không xác nhận hoặc bỏ lỡ, người thân sẽ được thông báo để hỗ trợ bác kịp thời.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('home')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/eb0c64d9-29e8-4e8d-983b-6c367dfe1027" alt="Home"></div>
+                <div class="nav-label">Trang chủ</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('appointments')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/fddc5cd0-0aef-4e16-a8bd-550720ce723b" alt="Appointments"></div>
+                <div class="nav-label">Lịch hẹn</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('ai-advisor')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/664646a0-34ad-4490-95ce-dbb6895f1738" alt="AI Advisor"></div>
+                <div class="nav-label">AI ADVISOR</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('account')">
+                <div class="nav-profile"><img src="https://www.figma.com/api/mcp/asset/2068a450-d167-4836-a3bb-3bee13a569ab" alt="Profile"></div>
+                <div class="nav-label">Tài khoản</div>
+            </div>
+        </div>
+
+    <script>
+        function toggleNotification(element) {
+            element.classList.toggle('off');
+            const isEnabled = !element.classList.contains('off');
+            console.log('Thông báo lịch tái khám:', isEnabled ? 'Bật' : 'Tắt');
+        }
+
+        function addRelative() {
+            console.log('Mở form thêm người thân...');
+        }
+
+        function navigateTo(page) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            console.log('Điều hướng tới:', page);
+        }
+
+        // Initialize toggle switch (enabled by default)
+        window.addEventListener('load', function() {
+            const toggle = document.querySelector('.toggle-switch');
+            if (toggle && !toggle.classList.contains('off')) {
+                // Already enabled by default
+            }
+        });
+    </script>
+    <script>
+    function navigateTo(page) {
+        const files = {
+            home: 'patient_dashboard.html',
+            appointments: 'patient_appointments.html',
+            'ai-advisor': 'patient_chatbot.html',
+            account: 'patient_relative_settings.html'
+        };
+        if (files[page]) window.location.href = files[page];
+    }
+</script>
+</body>
+</html>

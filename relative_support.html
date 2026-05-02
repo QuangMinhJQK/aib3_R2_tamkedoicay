@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ trợ người thân - CareLoop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%),
+                        linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 390px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            box-shadow: 0px 24px 20px rgba(25, 28, 29, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            letter-spacing: -0.45px;
+            line-height: 28px;
+            white-space: nowrap;
+        }
+
+        .header-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            background: #d6e3ff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 0px 0px 2px white;
+            flex-shrink: 0;
+        }
+
+        .header-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            padding: 96px 24px 58px 24px;
+            overflow-y: auto;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #727783;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            line-height: 18px;
+        }
+
+        .section-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: #191c1d;
+            letter-spacing: -0.75px;
+            line-height: 36px;
+        }
+
+        /* Alert Card */
+        .alert-card {
+            background: #ffdad6;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-bg-image {
+            position: absolute;
+            width: 104px;
+            height: 112px;
+            right: 0;
+            top: 0;
+            opacity: 0.5;
+        }
+
+        .alert-bg-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .alert-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .alert-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .alert-icon {
+            width: 22px;
+            height: 19px;
+            flex-shrink: 0;
+        }
+
+        .alert-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .alert-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #93000a;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            line-height: 20px;
+        }
+
+        .alert-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #93000a;
+            line-height: 30px;
+        }
+
+        .alert-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            font-style: italic;
+            color: rgba(147, 0, 10, 0.8);
+            line-height: 24px;
+        }
+
+        .alert-date {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            width: fit-content;
+        }
+
+        .alert-date-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: rgba(147, 0, 10, 0.6);
+            text-transform: uppercase;
+            line-height: 15px;
+        }
+
+        .alert-date-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #93000a;
+            line-height: 28px;
+        }
+
+        .alert-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: 8px;
+        }
+
+        .alert-button {
+            border: none;
+            border-radius: 9999px;
+            padding: 21.5px 19.3px 22px 19.3px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            gap: 7.99px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        .alert-button-primary {
+            background: linear-gradient(155.21deg, #004891 0%, #005fb8 100%);
+            color: white;
+        }
+
+        .alert-button-primary:hover {
+            opacity: 0.9;
+        }
+
+        .alert-button-secondary {
+            background: #e1e3e4;
+            color: #00468b;
+        }
+
+        .alert-button-secondary:hover {
+            background: #d5d7d9;
+        }
+
+        .button-icon {
+            width: 10.5px;
+            height: 10.5px;
+        }
+
+        .button-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Quick Summary */
+        .quick-summary-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 28px;
+        }
+
+        .summary-more-button {
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: #00488d;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        /* Summary Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+
+        /* Main Metric Card */
+        .metric-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(6px);
+            border-left: 4px solid #1b6d24;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0px 24px 20px rgba(25, 28, 29, 0.02);
+            grid-column: 1 / span 12;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 160px;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .metric-icon {
+            width: 32px;
+            height: 36px;
+        }
+
+        .metric-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .metric-status-badge {
+            background: #a0f399;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            width: fit-content;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: #1b6d24;
+        }
+
+        .status-text {
+            font-size: 10px;
+            font-weight: bold;
+            color: #217128;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            line-height: 15px;
+        }
+
+        .metric-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #424752;
+            line-height: 20px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value-container {
+            display: flex;
+            align-items: baseline;
+            gap: 0;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1e3a8a;
+            line-height: 40px;
+        }
+
+        .metric-unit {
+            font-size: 18px;
+            font-weight: 500;
+            color: #727783;
+            line-height: 28px;
+            margin-left: 8px;
+        }
+
+        .metric-updated {
+            font-size: 10px;
+            font-weight: normal;
+            font-style: italic;
+            color: #727783;
+            line-height: 15px;
+            margin-top: 4px;
+        }
+
+        /* AI Insight Card */
+        .ai-card {
+            background: #f3f4f5;
+            border-radius: 24px;
+            padding: 20px;
+            grid-column: 1 / span 7;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .ai-header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .ai-icon {
+            width: 12.833px;
+            height: 11.083px;
+        }
+
+        .ai-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ai-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #00488d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 15px;
+        }
+
+        .ai-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #424752;
+            line-height: 22.75px;
+        }
+
+        /* Medication Status Card */
+        .medication-card {
+            background: #eff6ff;
+            border-radius: 24px;
+            padding: 20px;
+            grid-column: 8 / span 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .medication-icon {
+            width: 17.5px;
+            height: 22.5px;
+            margin-bottom: 0;
+        }
+
+        .medication-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .medication-status {
+            font-size: 12px;
+            font-weight: bold;
+            color: #005fb8;
+            text-align: center;
+            line-height: 16px;
+        }
+
+        .medication-time {
+            font-size: 10px;
+            font-weight: bold;
+            color: #00488d;
+            opacity: 0.6;
+            line-height: 15px;
+        }
+
+        /* Care Activity Section */
+        .care-activity {
+            border-radius: 24px;
+            overflow: hidden;
+            min-height: 192px;
+            display: flex;
+            align-items: flex-end;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .care-bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .care-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .care-gradient {
+            position: absolute;
+            inset: 0;
+            background: white;
+            mix-blend-mode: saturation;
+            pointer-events: none;
+        }
+
+        .care-gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #f8f9fa 0%, rgba(248, 249, 250, 0) 50%);
+            pointer-events: none;
+        }
+
+        .care-content {
+            position: relative;
+            z-index: 2;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .care-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #727783;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 15px;
+        }
+
+        .care-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 24px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            height: 89px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+        }
+
+        .nav-icon {
+            width: 16px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 15px;
+            text-align: center;
+        }
+
+        .nav-item.active .nav-label {
+            color: #1e3a8a;
+        }
+
+        .nav-item:not(.active) .nav-label {
+            color: #64748b;
+        }
+
+        .nav-profile {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .nav-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Scrollbar styling */
+        .main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+            }
+
+            .header {
+                width: 100%;
+            }
+
+            .bottom-nav {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">Trang chủ</div>
+            <div class="header-profile">
+                <img src="https://www.figma.com/api/mcp/asset/aca3c1f8-d776-44b4-a134-b5a08b9748ba" alt="Profile">
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Section Header -->
+            <div class="section-header">
+                <div class="section-label">GIA ĐÌNH</div>
+                <h1 class="section-title">Hỗ trợ người thân: Bác<br>Hùng</h1>
+            </div>
+
+            <!-- Alert Card -->
+            <div class="alert-card">
+                <div class="alert-bg-image">
+                    <img src="https://www.figma.com/api/mcp/asset/e42f8739-cfc5-4bc5-ae29-4dadd17acd38" alt="Background">
+                </div>
+
+                <div class="alert-content">
+                    <div class="alert-header">
+                        <div class="alert-icon">
+                            <img src="https://www.figma.com/api/mcp/asset/de984e13-0a80-49ae-a5d8-96bbe8757357" alt="Alert">
+                        </div>
+                        <div class="alert-label">CẢNH BÁO QUAN TRỌNG</div>
+                    </div>
+
+                    <div>
+                        <h2 class="alert-title">Lịch tái khám trễ hạn</h2>
+                        <p class="alert-subtitle">Đái tháo đường • Bệnh viện ĐHYD</p>
+                    </div>
+
+                    <div class="alert-date">
+                        <div class="alert-date-label">NGÀY DỰ KIẾN</div>
+                        <div class="alert-date-value">20/05/2025</div>
+                    </div>
+
+                    <div class="alert-buttons">
+                        <button class="alert-button alert-button-primary" onclick="callPatient()">
+                            <div class="button-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/b63ebf58-4e9d-4d1a-a2b4-4204bc7fd00b" alt="Call">
+                            </div>
+                            <span>Gọi cho bác</span>
+                        </button>
+                        <button class="alert-button alert-button-secondary" onclick="confirmAppointment()">
+                            <div class="button-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/51c8eccf-e743-441e-a886-5bbf8bcac846" alt="Confirm">
+                            </div>
+                            <span>Xác nhận<br>thay bác</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Summary Section -->
+            <div>
+                <div class="quick-summary-header">
+                    <h2 class="summary-title">Tóm tắt nhanh</h2>
+                    <button class="summary-more-button" onclick="viewDetails()">Chi tiết</button>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <div class="summary-grid">
+                        <!-- Main Metric: Blood Glucose -->
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/8e9b6b03-7152-40f1-9d7f-e95b786a43f5" alt="Health">
+                                </div>
+                                <div class="metric-status-badge">
+                                    <div class="status-dot"></div>
+                                    <div class="status-text">TỐT</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-body">
+                                <div class="metric-name">Đường huyết (Blood Glucose)</div>
+                                <div class="metric-value-container">
+                                    <div class="metric-value">7.2</div>
+                                    <div class="metric-unit">mmol/L</div>
+                                </div>
+                                <div class="metric-updated">Cập nhật 30 phút trước</div>
+                            </div>
+                        </div>
+
+                        <!-- AI Insight Card -->
+                        <div class="ai-card">
+                            <div class="ai-header">
+                                <div class="ai-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/bac0be9e-68ba-45b9-89b0-d2a03861ac53" alt="AI">
+                                </div>
+                                <div class="ai-label">AI ADVISOR</div>
+                            </div>
+                            <div class="ai-text">Chỉ số ổn định. Tiếp tục duy trì chế độ ăn ít tinh bột cho Bác.</div>
+                        </div>
+
+                        <!-- Medication Status Card -->
+                        <div class="medication-card">
+                            <div class="medication-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/550942d7-d5e8-4ff8-8fd6-a8513e7f6530" alt="Medication">
+                            </div>
+                            <div class="medication-status">Đã uống thuốc</div>
+                            <div class="medication-time">Sáng nay</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Care Activity Visualization -->
+            <div class="care-activity">
+                <div class="care-bg">
+                    <img src="https://www.figma.com/api/mcp/asset/59762ddc-59dd-4570-93ec-77c7a599b345" alt="Background">
+                </div>
+                <div class="care-gradient"></div>
+                <div class="care-gradient-overlay"></div>
+                <div class="care-content">
+                    <div class="care-label">BIỂU ĐỒ XU HƯỚNG</div>
+                    <div class="care-title">Ổn định trong 7 ngày qua</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation (đơn giản cho người thân) -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navigateTo('home')">
+                <div class="nav-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/3555d4b4-6d64-41f9-855c-65ea85762594" alt="Home">
+                </div>
+                <div class="nav-label">Trang chủ</div>
+            </div>
+
+            <div class="nav-item" onclick="logout()">
+                <div class="nav-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/62557c37-a515-4a09-a81e-a785631258a5" alt="Logout">
+                </div>
+                <div class="nav-label">Đăng xuất</div>
+            </div>
+        </div>
+
+    <script>
+        function navigateTo(page) {
+            if (page === 'home') {
+                // Đã ở đây, không làm gì hoặc reload
+                return;
+            }
+        }
+
+        function logout() {
+            window.location.href = 'patient_dashboard.html'; // quay về màn hình bệnh nhân
+        }
+
+        // Sửa hàm xử lý khi nhấn vào nút "Gọi cho bác" hoặc "Xác nhận thay bác"
+        function callPatient() {
+            console.log('Gọi cho bác Hùng...');
+            // Có thể hiển thị alert
+            alert("Đang gọi cho bác Hùng (mô phỏng)");
+        }
+
+        function confirmAppointment() {
+            console.log('Xác nhận lịch khám thay bác...');
+            // Sau khi xác nhận, có thể chuyển về relative_support.html hoặc hiện thông báo
+            alert("Đã xác nhận lịch khám thay bác");
+        }
+
+        function viewDetails() {
+            console.log('Xem chi tiết...');
+            // Có thể chuyển sang relative_missed_appointment.html để xem cảnh báo chi tiết
+            window.location.href = 'relative_missed_appointment.html';
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn hình chính - CareLoop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%),
+                        linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 390px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin: 0 auto;
+            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%);
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            box-shadow: 0px 24px 20px rgba(25, 28, 29, 0.04);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            letter-spacing: -0.45px;
+            line-height: 28px;
+            white-space: nowrap;
+        }
+
+        .header-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            background: #d6e3ff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            padding: 80px 24px 112px 24px;
+            overflow-y: auto;
+            padding-bottom: 112px;
+        }
+
+        /* Greeting Section */
+        .greeting-section {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .greeting-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #424752;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            line-height: 20px;
+        }
+
+        .greeting-heading {
+            font-size: 36px;
+            font-weight: 800;
+            color: #191c1d;
+            letter-spacing: -1.8px;
+            line-height: 40px;
+        }
+
+        /* AI Advisor Section */
+        .ai-advisor-section {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(6px);
+            border-left: 4px solid #1b6d24;
+            border-radius: 24px;
+            padding: 24px 24px 24px 28px;
+            display: flex;
+            gap: 16px;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-advisor-section:hover {
+            background: rgba(248, 249, 250, 0.95);
+        }
+
+        .ai-advisor-icon {
+            width: 46px;
+            height: 43px;
+            flex-shrink: 0;
+        }
+
+        .ai-advisor-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ai-advisor-content {
+            display: flex;
+            flex-direction: column;
+            gap: 7.25px;
+            flex: 1;
+        }
+
+        .ai-advisor-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1b6d24;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            line-height: 16px;
+            white-space: nowrap;
+        }
+
+        .ai-advisor-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #191c1d;
+            line-height: 22.5px;
+        }
+
+        .ai-advisor-arrow {
+            width: 7.4px;
+            height: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-advisor-arrow img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Health Status Indicator */
+        .health-status {
+            background: #f3f4f5;
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .health-status-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .health-status-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .health-status-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #424752;
+            line-height: 22.75px;
+        }
+
+        /* Next Appointment Section */
+        .next-appointment-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-heading {
+            font-size: 12px;
+            font-weight: bold;
+            color: #727783;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            line-height: 16px;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0px 24px 40px 0px rgba(25, 28, 29, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .appointment-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .appointment-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 25px;
+        }
+
+        .appointment-location {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .location-icon {
+            width: 10.667px;
+            height: 13.333px;
+            flex-shrink: 0;
+        }
+
+        .location-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .location-text {
+            font-size: 14px;
+            font-weight: normal;
+            color: #424752;
+            line-height: 20px;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            background: #ffdad6;
+            border-radius: 9999px;
+            padding: 4px 12px;
+        }
+
+        .status-badge-text {
+            font-size: 7px;
+            font-weight: bold;
+            color: #93000a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            line-height: 15px;
+        }
+
+        .datetime-container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .datetime-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .datetime-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 24px;
+            background: #d6e3ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .datetime-icon {
+            width: 18px;
+            height: 20px;
+        }
+
+        .datetime-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .datetime-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .datetime-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #727783;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            line-height: 15px;
+        }
+
+        .datetime-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #191c1d;
+            line-height: 24px;
+            white-space: nowrap;
+        }
+
+        .appointment-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .button {
+            border: none;
+            border-radius: 9999px;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 20px;
+        }
+
+        .button-primary {
+            background: linear-gradient(159.82deg, #004891 0%, #005fb8 100%);
+            color: white;
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-primary:hover {
+            opacity: 0.9;
+        }
+
+        .button-primary:active {
+            opacity: 0.95;
+        }
+
+        .button-secondary {
+            background: #e7e8e9;
+            color: #00468b;
+        }
+
+        .button-secondary:hover {
+            background: #dbeaea;
+        }
+
+        /* Health Summary Section */
+        .health-summary-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .health-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .health-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .health-card.glucose {
+            border-left: 4px solid #a3f69c;
+        }
+
+        .health-metric-label {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .metric-icon {
+            width: 13.333px;
+            height: 15.833px;
+            flex-shrink: 0;
+        }
+
+        .metric-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .metric-label-text {
+            font-size: 10px;
+            font-weight: bold;
+            color: #727783;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 15px;
+        }
+
+        .metric-value-container {
+            display: flex;
+            gap: 4px;
+            align-items: baseline;
+            padding-top: 8px;
+            white-space: nowrap;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #191c1d;
+            line-height: 32px;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            font-weight: 500;
+            color: #424752;
+            line-height: 16px;
+        }
+
+        .metric-status {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .status-icon {
+            flex-shrink: 0;
+        }
+
+        .status-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .status-text {
+            font-size: 10px;
+            font-weight: bold;
+            color: #1b6d24;
+            line-height: 15px;
+        }
+
+        .status-text-gray {
+            font-size: 10px;
+            font-weight: bold;
+            color: #424752;
+            line-height: 15px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 390px;
+            height: 89px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+        }
+
+        .nav-icon {
+            width: 16px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 15px;
+            text-align: center;
+        }
+
+        .nav-item.active .nav-label {
+            color: #1e3a8a;
+        }
+
+        .nav-item:not(.active) .nav-label {
+            color: #64748b;
+        }
+
+        .nav-profile {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .nav-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Scrollbar styling */
+        .main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+            }
+
+            .header {
+                width: 100%;
+            }
+
+            .bottom-nav {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-title">Màn hình chính</div>
+                <div class="header-profile">
+                    <img src="https://www.figma.com/api/mcp/asset/475d57eb-6d27-4bd0-9cd6-1e6c4503c9db" alt="Profile">
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Greeting Section -->
+            <div class="greeting-section">
+                <div class="greeting-label">CHÀO BUỔI SÁNG</div>
+                <h1 class="greeting-heading">Chào bác Hùng!</h1>
+            </div>
+
+            <!-- AI Advisor Section -->
+            <div class="ai-advisor-section">
+                <div class="ai-advisor-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/2531fc31-3101-41bc-ba2d-22f8dc025b94" alt="AI Icon">
+                </div>
+                <div class="ai-advisor-content">
+                    <div class="ai-advisor-label">AI ADVISOR</div>
+                    <div class="ai-advisor-title">Hỏi AI Advisor về đơn thuốc của bác</div>
+                </div>
+                <div class="ai-advisor-arrow">
+                    <img src="https://www.figma.com/api/mcp/asset/0753b80d-1023-4596-9782-074ea086ada0" alt="Arrow">
+                </div>
+            </div>
+
+            <!-- Health Status Indicator -->
+            <div class="health-status">
+                <div class="health-status-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/2037e1e5-ff33-4a91-b12b-abf590d96fcf" alt="Check">
+                </div>
+                <div class="health-status-text">Sức khỏe của bác đang rất tốt, hãy duy trì lịch tái khám nhé</div>
+            </div>
+
+            <!-- Next Appointment Section -->
+            <div class="next-appointment-section">
+                <div class="section-heading">LỊCH HẸN SẮP TỚI</div>
+
+                <div class="appointment-card">
+                    <div class="appointment-header">
+                        <div class="appointment-info">
+                            <div class="appointment-title">Tái khám Đái tháo đường</div>
+                            <div class="appointment-location">
+                                <div class="location-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/4c2891ef-abbd-462f-bd91-67dedb9db04a" alt="Location">
+                                </div>
+                                <span class="location-text">Bệnh viện ĐHYD</span>
+                            </div>
+                        </div>
+                        <div class="status-badge">
+                            <div class="status-badge-text">CẦN XÁC NHẬN</div>
+                        </div>
+                    </div>
+
+                    <div class="datetime-container">
+                        <div class="datetime-item">
+                            <div class="datetime-icon-box">
+                                <div class="datetime-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/70e70fcd-6866-4ec9-8614-facdca1f8a10" alt="Date">
+                                </div>
+                            </div>
+                            <div class="datetime-info">
+                                <div class="datetime-label">NGÀY</div>
+                                <div class="datetime-value">20/05/2025</div>
+                            </div>
+                        </div>
+
+                        <div class="datetime-item">
+                            <div class="datetime-icon-box">
+                                <div class="datetime-icon">
+                                    <img src="https://www.figma.com/api/mcp/asset/0da06f37-a14d-4fb0-810d-a59f14814769" alt="Time">
+                                </div>
+                            </div>
+                            <div class="datetime-info">
+                                <div class="datetime-label">GIỜ</div>
+                                <div class="datetime-value">08:30</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="appointment-buttons">
+                        <button class="button button-primary">Xác nhận</button>
+                        <button class="button button-secondary">Đổi lịch/Hủy lịch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Summary Section -->
+            <div class="health-summary-section">
+                <div class="section-heading">CHỈ SỐ SỨC KHỎE</div>
+
+                <div class="health-cards-grid">
+                    <!-- Blood Glucose Card -->
+                    <div class="health-card glucose">
+                        <div class="health-metric-label">
+                            <div class="metric-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/0ac6ede7-4c7c-48e7-973f-14f59387e49c" alt="Glucose">
+                            </div>
+                            <span class="metric-label-text">ĐƯỜNG HUYẾT</span>
+                        </div>
+                        <div class="metric-value-container">
+                            <span class="metric-value">7.2</span>
+                            <span class="metric-unit">mmol/L</span>
+                        </div>
+                        <div class="metric-status">
+                            <div class="status-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/9f66beb6-ba57-4182-a4e9-52312b4f1b3b" alt="Good">
+                            </div>
+                            <span class="status-text">Tốt</span>
+                        </div>
+                    </div>
+
+                    <!-- Blood Pressure Card -->
+                    <div class="health-card">
+                        <div class="health-metric-label">
+                            <div class="metric-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/f6548924-a53c-49fc-82fb-6098fa5ab083" alt="Blood Pressure">
+                            </div>
+                            <span class="metric-label-text">HUYẾT ÁP</span>
+                        </div>
+                        <div class="metric-value-container">
+                            <span class="metric-value">135/85</span>
+                            <span class="metric-unit">mmHg</span>
+                        </div>
+                        <div class="metric-status">
+                            <div class="status-icon">
+                                <img src="https://www.figma.com/api/mcp/asset/88b662cd-100b-43ff-8064-e89e68994845" alt="Status">
+                            </div>
+                            <span class="status-text-gray">Ổn định</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="navigateTo('home')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/eb0c64d9-29e8-4e8d-983b-6c367dfe1027" alt="Home"></div>
+                <div class="nav-label">Trang chủ</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('appointments')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/fddc5cd0-0aef-4e16-a8bd-550720ce723b" alt="Appointments"></div>
+                <div class="nav-label">Lịch hẹn</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('ai-advisor')">
+                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/664646a0-34ad-4490-95ce-dbb6895f1738" alt="AI Advisor"></div>
+                <div class="nav-label">AI ADVISOR</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('account')">
+                <div class="nav-profile"><img src="https://www.figma.com/api/mcp/asset/2068a450-d167-4836-a3bb-3bee13a569ab" alt="Profile"></div>
+                <div class="nav-label">Tài khoản</div>
+            </div>
+        </div>
+
+    <script>
+        // Navigation interactivity
+        document.querySelectorAll('.nav-item').forEach((item, index) => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Button interactivity
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const isConfirm = this.classList.contains('button-primary');
+                const message = isConfirm 
+                    ? 'Lịch khám đã được xác nhận!' 
+                    : 'Mở trang thay đổi lịch...';
+                console.log(message);
+            });
+        });
+
+        // AI Advisor section click
+        document.querySelector('.ai-advisor-section').addEventListener('click', function() {
+            console.log('Mở AI Advisor...');
+        });
+    </script>
+    <script>
+    function navigateTo(page) {
+        const files = {
+            home: 'patient_dashboard.html',
+            appointments: 'patient_appointments.html',
+            'ai-advisor': 'patient_chatbot.html',
+            account: 'patient_relative_settings.html'
+        };
+        if (files[page]) window.location.href = files[page];
+    }
+</script>
+</body>
+</html>
