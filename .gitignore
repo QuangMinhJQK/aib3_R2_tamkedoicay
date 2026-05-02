@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Build and framework outputs
+dist/
+build/
+.next/
+.nuxt/
+.svelte-kit/
+out/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Caches and temp files
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+*.tmp
+*.temp
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Python artifacts (for mixed web app stacks)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.sqlite3
+
