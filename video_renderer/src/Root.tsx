@@ -8,7 +8,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="CareLoopVideo"
         component={MainComposition as React.FC<any>}
-        durationInFrames={450}
+        durationInFrames={900}
         fps={30}
         width={1280}
         height={720}
@@ -17,7 +17,14 @@ export const RemotionRoot: React.FC = () => {
           overallStatus: "",
           metrics: [],
           advices: [],
-          totalDurationInFrames: 450,
+          sectionNarrations: [],
+          sectionDurationsInFrames: {
+            report_status: 180,
+            health_metrics: 240,
+            progress: 240,
+            advice: 240,
+          },
+          totalDurationInFrames: 900,
         }}
       />
     </>

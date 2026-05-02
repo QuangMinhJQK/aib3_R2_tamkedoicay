@@ -6,7 +6,21 @@ from backend.app.services.video.tts_engine import generate_audio_for_advice, bui
 from backend.app.services.video.remotion_runner import render_video
 from backend.app.services.video.cleanup import cleanup_job_files
 from backend.app.services.video.video_compositor import VideoCompositor
-from backend.app.services.video.subtitle_generator import generate_subtitle_srt, AdviceWithTiming
+
+TARGET_VIDEO_FRAMES = 900  # 30 seconds at 30 fps
+SECTION_ORDER = ["report_status", "health_metrics", "progress", "advice"]
+MIN_SECTION_FRAMES = {
+    "report_status": 150,
+    "health_metrics": 210,
+    "progress": 210,
+    "advice": 210,
+}
+FLOOR_SECTION_FRAMES = {
+    "report_status": 120,
+    "health_metrics": 180,
+    "progress": 180,
+    "advice": 180,
+}
 
 
 def _build_section_text_map(props) -> dict:
@@ -49,6 +63,49 @@ def _build_section_text_map(props) -> dict:
     return section_map
 
 
+def _compute_section_slots(audio_frames: dict) -> dict:
+    """
+    Build a four-section timeline that totals exactly TARGET_VIDEO_FRAMES.
+
+    The plan keeps all 4 sections visible and tries to avoid long empty spans.
+    """
+    slots = {
+        section: max(int(audio_frames.get(section, 0)) + 30, MIN_SECTION_FRAMES[section])
+        for section in SECTION_ORDER
+    }
+
+    total = sum(slots.values())
+    if total < TARGET_VIDEO_FRAMES:
+        remaining = TARGET_VIDEO_FRAMES - total
+        grow_order = ["health_metrics", "progress", "advice", "report_status"]
+        idx = 0
+        while remaining > 0:
+            section = grow_order[idx % len(grow_order)]
+            slots[section] += 1
+            remaining -= 1
+            idx += 1
+    elif total > TARGET_VIDEO_FRAMES:
+        to_reduce = total - TARGET_VIDEO_FRAMES
+        while to_reduce > 0:
+            reducible = {
+                s: slots[s] - FLOOR_SECTION_FRAMES[s]
+                for s in SECTION_ORDER
+                if slots[s] > FLOOR_SECTION_FRAMES[s]
+            }
+            if not reducible:
+                break
+            section = max(reducible, key=reducible.get)
+            slots[section] -= 1
+            to_reduce -= 1
+
+    # Final safety adjustment to hit exact frame target.
+    diff = TARGET_VIDEO_FRAMES - sum(slots.values())
+    if diff != 0:
+        slots["advice"] = max(FLOOR_SECTION_FRAMES["advice"], slots["advice"] + diff)
+
+    return slots
+
+
 def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) -> None:
     temp_dir = os.path.join("output", job_id)
     os.makedirs(temp_dir, exist_ok=True)
@@ -60,16 +117,10 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
         props = extract_video_props(medical_record_text)
         
         # Step 2: Build section narrations for 4 segments and generate TTS.
-        section_frames = {
-            "report_status": 90,
-            "health_metrics": 120,
-            "progress": 120,
-        }
         section_texts = _build_section_text_map(props)
-        section_order = ["report_status", "health_metrics", "progress", "advice"]
 
         section_durations = {}
-        for idx, section in enumerate(section_order):
+        for idx, section in enumerate(SECTION_ORDER):
             audio_path = os.path.join(temp_dir, f"section_{idx}_{section}.mp3")
             duration_frames = generate_audio_for_advice(section_texts[section], audio_path)
             section_durations[section] = {
@@ -77,34 +128,36 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
                 "duration_frames": duration_frames,
             }
 
-        # First 3 sections are fixed on screen. The advice section expands when needed.
-        advice_frames = max(120, section_durations["advice"]["duration_frames"])
-        total_frames = 330 + advice_frames
+        # Compute section slots to fill an exact 30-second video.
+        audio_frames = {s: section_durations[s]["duration_frames"] for s in SECTION_ORDER}
+        section_slots = _compute_section_slots(audio_frames)
+        total_frames = TARGET_VIDEO_FRAMES
 
         # Update sectionNarrations with actual durations for traceability.
         for item in getattr(props, "sectionNarrations", []) or []:
             if item.section in section_durations:
                 item.audioDurationInFrames = section_durations[item.section]["duration_frames"]
 
-        # Subtitle timeline follows actual section slots in the video.
-        timeline = {
-            "report_status": (0, section_frames["report_status"]),
-            "health_metrics": (90, 210),
-            "progress": (210, 330),
-            "advice": (330, total_frames),
-        }
+        # Persist section frame plan for frontend sequencing.
+        props.sectionDurationsInFrames.report_status = section_slots["report_status"]
+        props.sectionDurationsInFrames.health_metrics = section_slots["health_metrics"]
+        props.sectionDurationsInFrames.progress = section_slots["progress"]
+        props.sectionDurationsInFrames.advice = section_slots["advice"]
 
-        advices_with_timing = []
+        # Build timeline from computed slots.
+        timeline = {}
+        cursor = 0
+        for section in SECTION_ORDER:
+            next_cursor = cursor + section_slots[section]
+            timeline[section] = (cursor, next_cursor)
+            cursor = next_cursor
+
         audio_segments = []
 
-        for section in section_order:
+        for section in SECTION_ORDER:
             start_frame, end_frame = timeline[section]
             audio_path = section_durations[section]["audio_path"]
-            narration_text = section_texts[section]
 
-            advices_with_timing.append(
-                AdviceWithTiming(narration_text, start_frame, end_frame, fps=30)
-            )
             audio_segments.append(
                 {
                     "audio_path": audio_path,
@@ -120,15 +173,11 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
         with open(props_path, "w", encoding="utf-8", errors="replace") as f:
             f.write(props.model_dump_json())
         
-        # Step 4: Generate SRT subtitles
-        subtitle_path = os.path.join(temp_dir, "subtitles.srt")
-        generate_subtitle_srt(advices_with_timing, subtitle_path)
-
-        # Step 5: Render Video via Remotion (silent animation)
+        # Step 4: Render Video via Remotion (silent animation)
         video_mp4 = os.path.join(temp_dir, f"silent_video.mp4")
         render_video(props_path, video_mp4)
 
-        # Step 6: Build synchronized narration with silence padding to video duration.
+        # Step 5: Build synchronized narration with silence padding to video duration.
         target_duration_ms = int(total_frames * 1000 / 30)
         combined_audio_path = os.path.join(temp_dir, "combined_audio.mp3")
         build_synchronized_narration(
@@ -137,14 +186,14 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
             target_duration_ms=target_duration_ms,
         )
         
-        # Step 7: Composite video + audio + subtitles
+        # Step 6: Composite video + audio (no subtitle burn-in)
         compositor = VideoCompositor(crf=23)
         output_mp4 = os.path.join("output", f"{job_id}.mp4")
         compositor.compose(
             video_path=video_mp4,
             audio_path=combined_audio_path,
             output_path=output_mp4,
-            subtitle_path=subtitle_path,
+            subtitle_path=None,
             font_size=24
         )
         

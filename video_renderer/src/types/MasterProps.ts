@@ -22,5 +22,11 @@ export interface MasterProps {
   metrics: HealthMetric[];
   advices: DoctorAdvice[];
   sectionNarrations?: SectionNarration[];
+  sectionDurationsInFrames?: {
+    report_status: number;
+    health_metrics: number;
+    progress: number;
+    advice: number;
+  };
   totalDurationInFrames: number;
 }

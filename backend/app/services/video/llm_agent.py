@@ -3,6 +3,25 @@ import json
 from openai import OpenAI
 from backend.app.models.video_schema import MasterProps
 
+
+def _extract_json_object(content: str) -> dict:
+    """
+    Extract the first JSON object from a model response.
+
+    This tolerates leading/trailing markdown or commentary by locating the
+    first '{' and using JSONDecoder.raw_decode to parse the first object only.
+    """
+    if not content:
+        raise ValueError("Empty model response")
+
+    start_index = content.find("{")
+    if start_index == -1:
+        raise ValueError("No JSON object found in model response")
+
+    decoder = json.JSONDecoder()
+    parsed, _ = decoder.raw_decode(content[start_index:])
+    return parsed
+
 def extract_video_props(medical_record_text: str) -> MasterProps:
     """Extract structured data from a medical record using LLM."""
     client = OpenAI(
@@ -63,6 +82,9 @@ def extract_video_props(medical_record_text: str) -> MasterProps:
     content = content.strip()
     
     # Parse and validate against our Pydantic schema
-    data = json.loads(content)
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        data = _extract_json_object(content)
     # Ensure audioDurationInFrames and totalDurationInFrames are at least 0
     return MasterProps(**data)

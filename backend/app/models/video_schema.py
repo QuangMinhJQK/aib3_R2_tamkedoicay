@@ -17,10 +17,18 @@ class SectionNarration(BaseModel):
     text: str
     audioDurationInFrames: int = 0
 
+
+class SectionDurations(BaseModel):
+    report_status: int = 90
+    health_metrics: int = 120
+    progress: int = 120
+    advice: int = 120
+
 class MasterProps(BaseModel):
     patientName: str
     overallStatus: str
     metrics: List[HealthMetric]
     advices: List[DoctorAdvice]
     sectionNarrations: List[SectionNarration] = Field(default_factory=list)
+    sectionDurationsInFrames: SectionDurations = Field(default_factory=SectionDurations)
     totalDurationInFrames: int
