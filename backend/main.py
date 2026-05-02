@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
 
-# Load environment variables
+from backend.app.api.endpoints import users, appointments, metrics, ai, notifications
+
 load_dotenv()
 
 app = FastAPI(
@@ -12,28 +12,33 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Configure CORS - Cho phép front-end gọi API
-origins = [
-    "http://localhost:8000",
-    "*" # Lưu ý: Trong production không nên dùng "*"
-]
-
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Register routers
+app.include_router(users.router)
+app.include_router(appointments.router)
+app.include_router(metrics.router)
+app.include_router(ai.router)
+app.include_router(notifications.router)
+
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to CareLoop API", "status": "online"}
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
