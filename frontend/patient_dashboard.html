@@ -836,9 +836,7 @@
                             <span class="metric-unit">mmol/L</span>
                         </div>
                         <div class="metric-status">
-                            <div class="status-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/9f66beb6-ba57-4182-a4e9-52312b4f1b3b" alt="Good">
-                            </div>
+                            <div class="status-icon">                            </div>
                             <span class="status-text">Tốt</span>
                         </div>
                     </div>
@@ -857,7 +855,6 @@
                         </div>
                         <div class="metric-status">
                             <div class="status-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/88b662cd-100b-43ff-8064-e89e68994845" alt="Status">
                             </div>
                             <span class="status-text-gray">Ổn định</span>
                         </div>
@@ -905,11 +902,12 @@
                 console.log(message);
             });
         });
-
+ 
         // AI Advisor section click
         document.querySelector('.ai-advisor-section').addEventListener('click', function() {
-            console.log('Mở AI Advisor...');
+            navigateTo('ai-advisor');
         });
+
         const currentPatientId = "3";
         const notificationApiUrl = "https://n8n.n2nai.io/webhook/get-patient-notifications";
 
@@ -967,6 +965,44 @@
         }
 
         loadNotifications();
+        
+        // ===== API Integration (Load data from backend) =====
+        async function loadDashboardData() {
+            try {
+                API.showLoading();
+                
+                // Fetch user info
+                const userInfo = await API.user.getCurrentUser();
+                DataBinding.bindGreeting(userInfo.name);
+                
+                // Fetch latest metrics
+                const metrics = await API.metrics.getLatestMetrics();
+                DataBinding.bindHealthMetrics(metrics);
+                
+                // Fetch next appointment
+                const appointment = await API.appointment.getNextAppointment();
+                if (appointment) {
+                  DataBinding.bindNextAppointment(appointment);
+                }
+                
+                API.hideLoading();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                API.showError(`Lỗi tải dữ liệu: ${error.message}`);
+                API.hideLoading();
+            }
+        }
+        
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+        
+        // If page is already loaded, call immediately
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadDashboardData);
+        } else {
+            loadDashboardData();
+        }
+    
     function navigateTo(page) {
         const files = {
             home: 'patient_dashboard.html',
@@ -977,5 +1013,7 @@
         if (files[page]) window.location.href = files[page];
     }
 </script>
+<script src="api-client.js"></script>
+<script src="data-binding.js"></script>
 </body>
 </html>
