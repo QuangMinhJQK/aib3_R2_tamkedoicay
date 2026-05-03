@@ -1,4 +1,10 @@
+import json
+import logging
+
 from backend.app.core.database import get_db
+from backend.app.services.gemini_service import generate_clinical_summary
+
+logger = logging.getLogger(__name__)
 
 
 def get_next_appointment(patient_id: int) -> dict | None:
@@ -61,7 +67,31 @@ def relative_confirm(appointment_id: int) -> bool:
         return cursor.rowcount > 0
 
 
+def _try_parse_cached_summary(ai_summary: str | None) -> dict | None:
+    """Attempt to parse ai_summary as JSON. Returns dict if valid, None otherwise."""
+    if not ai_summary:
+        return None
+    try:
+        parsed = json.loads(ai_summary)
+        required = {"clinical_summary", "metrics", "doctor_notes", "warning", "next_steps"}
+        if required.issubset(parsed.keys()):
+            return parsed
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return None
+
+
+def _save_ai_summary(record_id: int, summary_json: str):
+    """Cache the generated summary back to DB."""
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE medical_records SET ai_summary = ? WHERE id = ?",
+            (summary_json, record_id),
+        )
+
+
 def get_last_summary(patient_id: int) -> dict | None:
+    # 1. Query medical_records + patient info
     with get_db() as conn:
         row = conn.execute(
             """
