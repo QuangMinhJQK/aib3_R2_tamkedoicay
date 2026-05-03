@@ -1,41 +1,82 @@
-# CareLoop – Ứng dụng chăm sóc sức khỏe
+# CareLoop – Hệ sinh thái chăm sóc sức khỏe thông minh
 
-Gồm 6 màn hình (frame) cho **bệnh nhân** và **người thân**, hỗ trợ theo dõi chỉ số, lịch hẹn, chatbot AI và cảnh báo trễ hẹn.
-
----
-
-## 📱 Các frame chính
-
-### 🧑‍⚕️ Luồng bệnh nhân (Bác Hùng)
-
-| Frame | Tên file | Chức năng |
-|-------|----------|------------|
-| 1 | `patient_dashboard.html` | Trang chủ: chào, AI Advisor, chỉ số nhanh (đường huyết, huyết áp), lịch hẹn sắp tới. |
-| 2 | `patient_appointments.html` | Chi tiết kết quả khám, biểu đồ đường huyết, video dặn dò từ bác sĩ AI. |
-| 3 | `patient_chatbot.html` | Chat với AI Advisor: hỏi về thuốc, chế độ ăn, chỉ số. Hỗ trợ nhập văn bản/giọng nói. |
-| 4 | `patient_relative_settings.html` | Cài đặt người thân hỗ trợ: thêm, xóa, bật/tắt thông báo cho người nhà. |
-
-**🔁 Điều hướng giữa 4 frame:** Dùng thanh bottom nav (Trang chủ, Lịch hẹn, AI Advisor, Tài khoản) – có sẵn trong mỗi file.
+CareLoop là một giải pháp toàn diện hỗ trợ bệnh nhân và người thân trong việc quản lý sức khỏe, theo dõi lịch hẹn và tư vấn y tế thông qua trí tuệ nhân tạo (AI). Dự án kết hợp giao diện người dùng hiện đại, hệ thống backend mạnh mẽ và mô hình dự báo XGBOOST.
 
 ---
 
-### 👨‍👩‍👧 Luồng người thân (Anh Tuấn)
+## 📂 Cấu trúc dự án
 
-| Frame | Tên file | Chức năng |
-|-------|----------|------------|
-| 5 | `relative_support.html` | Màn hình chính của người thân: xem tóm tắt sức khỏe của bác Hùng, nhận cảnh báo trễ hẹn. |
-| 6 | `relative_missed_appointment.html` | Màn hình cảnh báo khẩn cấp: chi tiết lịch trễ, gợi ý từ AI, nút gọi điện / xác nhận thay. |
-
-**🔁 Điều hướng giữa 2 frame:**  
-- Từ `relative_support.html`, nhấn vào nút “Chi tiết” hoặc toàn bộ thẻ cảnh báo → chuyển sang `relative_missed_appointment.html`.  
-- Từ `relative_missed_appointment.html`, nhấn nút **Quay lại** (góc trái header) → về `relative_support.html`.
+- **`frontend/`**: Chứa các giao diện HTML/CSS/JS thuần cho Bệnh nhân và Người thân.
+- **`backend/`**: Hệ thống API xây dựng trên FastAPI, quản lý dữ liệu, thông báo và tích hợp AI.
+- **`XGBOOST/`**: Mô hình và dữ liệu dự báo (ví dụ: dự báo khả năng bỏ lỡ lịch hẹn).
+- **`video_renderer/`**: Công cụ tạo video hướng dẫn cá nhân hóa (nếu có).
 
 ---
 
-## 🚀 Cách chạy
+## 📱 Các tính năng chính
 
-- **Mở trước:** `patient_dashboard.html` (nếu xem vai bệnh nhân) hoặc `relative_support.html` (nếu xem vai người thân).  
-- Các file còn lại sẽ được điều hướng tự động từ bottom nav hoặc nút bấm bên trong.
+### 🧑‍⚕️ Dành cho Bệnh nhân (Patient Flow)
+- **Dashboard**: Theo dõi chỉ số sức khỏe (đường huyết, huyết áp) và lịch hẹn sắp tới.
+- **AI Advisor**: Chatbot tư vấn về đơn thuốc, chế độ ăn uống và nhắc nhở sức khỏe.
+- **Lịch hẹn & Video**: Xem chi tiết lịch khám và video dặn dò từ bác sĩ AI.
+- **Cài đặt người thân**: Quản lý danh sách và quyền nhận thông báo của người nhà.
 
-> Hiện tại chưa có cơ chế đăng nhập – bạn cần chọn thủ công vai trò bằng cách mở đúng file.  
-> Dự án chỉ hoạt động thuần trên trình duyệt, không cần cài đặt thêm.
+### 👨‍👩‍👧 Dành cho Người thân (Relative Flow)
+- **Support Dashboard**: Theo dõi tình trạng sức khỏe tổng quát của người thân.
+- **Cảnh báo thông minh**: Nhận thông báo khẩn cấp nếu người thân bỏ lỡ lịch khám.
+- **Hành động nhanh**: Gọi điện trực tiếp hoặc xác nhận thay đổi lịch hẹn cho người thân.
+
+---
+
+## 🛠️ Hướng dẫn cài đặt & Chạy ứng dụng
+
+### 1. Yêu cầu hệ thống
+- Python 3.8+
+- Trình duyệt web hiện đại (Chrome, Edge, v.v.)
+
+### 2. Cài đặt Backend
+Mở terminal tại thư mục gốc của dự án:
+
+```bash
+# Tạo môi trường ảo (khuyến nghị)
+python -m venv .venv
+source .venv/bin/activate  # Trên Windows: .venv\Scripts\activate
+
+# Cài đặt các thư viện cần thiết
+pip install -r requirements.txt
+```
+
+### 3. Cấu hình môi trường
+Sao chép tệp `.env.example` thành `.env` và điền các API Key cần thiết:
+```bash
+cp .env.example .env
+```
+Các thông số quan trọng:
+- `GOOGLE_API_KEY`: Dùng cho các dịch vụ AI của Google (Gemini).
+- `ELEVENLABS_API_KEY`: Dùng cho dịch vụ chuyển đổi văn bản thành giọng nói (TTS).
+
+### 4. Chạy Backend API
+Chạy lệnh sau để khởi động server:
+
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+- API sẽ chạy tại: `http://localhost:8000`
+- Tài liệu API (Swagger UI): `http://localhost:8000/docs`
+
+### 5. Xem Frontend
+Mở trực tiếp các tệp HTML trong thư mục `frontend/` bằng trình duyệt:
+- Bệnh nhân: `frontend/patient_dashboard.html`
+- Người thân: `frontend/relative_support.html`
+
+*Lưu ý: Đảm bảo Backend đang chạy để các tính năng dữ liệu và AI hoạt động chính xác.*
+
+---
+
+## 🤖 Công nghệ sử dụng
+- **Frontend**: HTML5, CSS3 (Vanilla CSS), JavaScript (ES6+).
+- **Backend**: Python, FastAPI, SQLite (Cơ sở dữ liệu), Uvicorn.
+- **AI/ML**: Google Gemini API, OpenAI API, ElevenLabs TTS, XGBoost.
+
+---
+© 2024 CareLoop Team - Advanced Agentic Coding.
