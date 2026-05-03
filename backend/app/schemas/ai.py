@@ -25,3 +25,8 @@ class VideoAdviceResponse(BaseModel):
     thumbnail_url: Optional[str] = None
     title: str
     description: Optional[str] = None
+
+
+class VideoUrlUpdateRequest(BaseModel):
+    patient_id: int
+    video_url: str

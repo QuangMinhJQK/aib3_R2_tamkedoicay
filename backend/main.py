@@ -2,9 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from backend.app.api.endpoints import users, appointments, metrics, ai, notifications
-
 load_dotenv()
+
+from backend.app.api.endpoints import users, appointments, metrics, ai, notifications, video
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="CareLoop API",
@@ -27,6 +28,10 @@ app.include_router(appointments.router)
 app.include_router(metrics.router)
 app.include_router(ai.router)
 app.include_router(notifications.router)
+app.include_router(video.router, prefix="/api/v1/videos", tags=["Videos"])
+
+# Mount static directory for videos
+app.mount("/static/videos", StaticFiles(directory="output"), name="videos")
 
 
 @app.get("/")

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 from backend.app.core.database import get_db
 
@@ -116,3 +117,54 @@ def get_medication_status(patient_id: int) -> dict:
     if row and row["prescriptions"]:
         return {"status": "TAKEN", "time": "Sáng nay"}
     return {"status": "PENDING", "time": None}
+
+
+def get_clinical_history(patient_id: int, days: int = 30, max_series: int = 4, max_points_per_series: int = 8) -> list[dict]:
+    cutoff = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_db() as conn:
+        rows = conn.execute(
+            """
+            SELECT metric_name, metric_value, unit, recorded_at
+            FROM clinical_metrics
+            WHERE patient_id = ? AND recorded_at >= ?
+            ORDER BY recorded_at ASC
+            """,
+            (patient_id, cutoff),
+        ).fetchall()
+
+    grouped: dict[str, dict] = {}
+    for row in rows:
+        metric_name = row["metric_name"]
+        series = grouped.setdefault(
+            metric_name,
+            {
+                "name": metric_name,
+                "unit": row["unit"] or "",
+                "points": [],
+                "latestAt": row["recorded_at"],
+            },
+        )
+        series["unit"] = series["unit"] or (row["unit"] or "")
+        series["latestAt"] = row["recorded_at"]
+        series["points"].append(
+            {
+                "date": row["recorded_at"][5:10].replace("-", "/") if row["recorded_at"] else "",
+                "value": row["metric_value"],
+            }
+        )
+
+    ordered_series = sorted(grouped.values(), key=lambda item: item.get("latestAt") or "", reverse=True)
+    trimmed_series = []
+    for series in ordered_series[:max_series]:
+        points = series["points"][-max_points_per_series:]
+        trimmed_series.append(
+            {
+                "name": series["name"],
+                "unit": series["unit"],
+                "points": points,
+                "totalPoints": len(series["points"]),
+            }
+        )
+
+    return trimmed_series

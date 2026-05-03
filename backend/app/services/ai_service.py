@@ -58,3 +58,29 @@ def get_video_advice(patient_id: int) -> dict | None:
         "title": "Video giải thích tóm tắt",
         "description": row["ai_summary"],
     }
+
+
+def update_latest_video_url(patient_id: int, video_url: str) -> bool:
+    with get_db() as conn:
+        record = conn.execute(
+            """
+            SELECT id
+            FROM medical_records
+            WHERE patient_id = ?
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+            """,
+            (patient_id,),
+        ).fetchone()
+        if not record:
+            return False
+
+        cursor = conn.execute(
+            """
+            UPDATE medical_records
+            SET ai_video_url = ?
+            WHERE id = ?
+            """,
+            (video_url, record["id"]),
+        )
+        return cursor.rowcount > 0
