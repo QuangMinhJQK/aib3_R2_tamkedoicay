@@ -895,6 +895,47 @@
             event.target.closest('.nav-item').classList.add('active');
             console.log('Điều hướng tới:', page);
         }
+        
+        // ===== API Integration (Load data from backend) =====
+        async function loadAppointmentsData() {
+            try {
+                API.showLoading();
+                
+                // Fetch last summary (clinical summary + metrics + warnings)
+                const summary = await API.appointment.getLastSummary();
+                if (summary) {
+                  DataBinding.bindClinicalSummary(summary);
+                }
+                
+                // Fetch metrics history for chart
+                const history = await API.metrics.getMetricsHistory(90, 4, 8);
+                if (history) {
+                  DataBinding.bindMetricsChart(history);
+                }
+                
+                // Fetch video advice if available
+                const videoData = await API.ai.getVideoAdvice();
+                if (videoData && videoData.video_url) {
+                  const videoContainer = document.querySelector('.video-image');
+                  if (videoContainer) {
+                    videoContainer.src = videoData.thumbnail_url || 'https://www.figma.com/api/mcp/asset/73dc78ed-613a-415d-912b-0f0b2fc606ad';
+                  }
+                }
+                
+                API.hideLoading();
+            } catch (error) {
+                console.error('Error loading appointments data:', error);
+                API.showError(`Lỗi tải dữ liệu: ${error.message}`);
+                API.hideLoading();
+            }
+        }
+        
+        // Load data when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadAppointmentsData);
+        } else {
+            loadAppointmentsData();
+        }
     </script>
     <script>
     function navigateTo(page) {
@@ -907,5 +948,7 @@
         if (files[page]) window.location.href = files[page];
     }
 </script>
+<script src="api-client.js"></script>
+<script src="data-binding.js"></script>
 </body>
 </html>

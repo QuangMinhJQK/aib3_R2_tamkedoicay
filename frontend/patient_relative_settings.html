@@ -702,6 +702,44 @@
                 // Already enabled by default
             }
         });
+        
+        // ===== API Integration (Load data from backend) =====
+        async function loadSettingsData() {
+            try {
+                API.showLoading();
+                
+                // Fetch relatives list
+                const relatives = await API.user.getRelatives();
+                DataBinding.bindRelativesList(relatives);
+                
+                API.hideLoading();
+            } catch (error) {
+                console.error('Error loading settings data:', error);
+                API.showError(`Lỗi tải dữ liệu: ${error.message}`);
+                API.hideLoading();
+            }
+        }
+        
+        // Load data when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadSettingsData);
+        } else {
+            loadSettingsData();
+        }
+        
+        // Override toggleNotification to use API
+        async function toggleRelativeNotification(relativeId, toggleElement) {
+            try {
+                const isNowOn = !toggleElement.classList.contains('off');
+                await API.user.toggleNotification(relativeId, isNowOn);
+                toggleElement.classList.toggle('off');
+                console.log(`Thông báo cho người thân ${relativeId}: ${isNowOn ? 'Bật' : 'Tắt'}`);
+            } catch (error) {
+                console.error('Error toggling notification:', error);
+                API.showError(`Lỗi cập nhật: ${error.message}`);
+                toggleElement.classList.toggle('off'); // Revert change
+            }
+        }
     </script>
     <script>
     function navigateTo(page) {
@@ -714,5 +752,7 @@
         if (files[page]) window.location.href = files[page];
     }
 </script>
+<script src="api-client.js"></script>
+<script src="data-binding.js"></script>
 </body>
 </html>

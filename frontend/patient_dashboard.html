@@ -967,6 +967,44 @@
         }
 
         loadNotifications();
+        
+        // ===== API Integration (Load data from backend) =====
+        async function loadDashboardData() {
+            try {
+                API.showLoading();
+                
+                // Fetch user info
+                const userInfo = await API.user.getCurrentUser();
+                DataBinding.bindGreeting(userInfo.name);
+                
+                // Fetch latest metrics
+                const metrics = await API.metrics.getLatestMetrics();
+                DataBinding.bindHealthMetrics(metrics);
+                
+                // Fetch next appointment
+                const appointment = await API.appointment.getNextAppointment();
+                if (appointment) {
+                  DataBinding.bindNextAppointment(appointment);
+                }
+                
+                API.hideLoading();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                API.showError(`Lỗi tải dữ liệu: ${error.message}`);
+                API.hideLoading();
+            }
+        }
+        
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+        
+        // If page is already loaded, call immediately
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadDashboardData);
+        } else {
+            loadDashboardData();
+        }
+    
     function navigateTo(page) {
         const files = {
             home: 'patient_dashboard.html',
@@ -977,5 +1015,7 @@
         if (files[page]) window.location.href = files[page];
     }
 </script>
+<script src="api-client.js"></script>
+<script src="data-binding.js"></script>
 </body>
 </html>
