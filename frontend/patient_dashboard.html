@@ -604,6 +604,109 @@
                 width: 100%;
             }
         }
+        /* In-app notification */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-bell {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 9999px;
+            background: #eef2ff;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            background: #dbeafe;
+        }
+
+        #notification-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-panel {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 14px;
+            box-shadow: 0 12px 28px rgba(25, 28, 29, 0.08);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification-panel.hidden {
+            display: none;
+        }
+
+        .notification-panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 2px;
+        }
+
+        .notification-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 12px;
+            background: #f9fafb;
+        }
+
+        .notification-item.unread {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.45;
+            white-space: pre-line;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .notification-empty {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -612,8 +715,14 @@
         <div class="header">
             <div class="header-content">
                 <div class="header-title">Màn hình chính</div>
-                <div class="header-profile">
-                    <img src="https://www.figma.com/api/mcp/asset/475d57eb-6d27-4bd0-9cd6-1e6c4503c9db" alt="Profile">
+                <div class="header-actions">
+                    <button class="notification-bell" type="button" onclick="toggleNotifications()" aria-label="Mở thông báo">
+                        🔔
+                        <span id="notification-count">0</span>
+                    </button>
+                    <div class="header-profile">
+                        <img src="https://www.figma.com/api/mcp/asset/475d57eb-6d27-4bd0-9cd6-1e6c4503c9db" alt="Profile">
+                    </div>
                 </div>
             </div>
         </div>
@@ -624,6 +733,14 @@
             <div class="greeting-section">
                 <div class="greeting-label">CHÀO BUỔI SÁNG</div>
                 <h1 class="greeting-heading">Chào bác Hùng!</h1>
+            </div>
+
+            <!-- In-app Notification Panel -->
+            <div id="notification-panel" class="notification-panel hidden">
+                <div class="notification-panel-title">Thông báo</div>
+                <div id="notification-list">
+                    <p class="notification-empty">Đang tải thông báo...</p>
+                </div>
             </div>
 
             <!-- AI Advisor Section -->
@@ -793,8 +910,63 @@
         document.querySelector('.ai-advisor-section').addEventListener('click', function() {
             console.log('Mở AI Advisor...');
         });
-    </script>
-    <script>
+        const currentPatientId = "3";
+        const notificationApiUrl = "https://n8n.n2nai.io/webhook/get-patient-notifications";
+
+        function toggleNotifications() {
+            const panel = document.getElementById("notification-panel");
+            panel.classList.toggle("hidden");
+        }
+
+        function normalizeNotificationResponse(data) {
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.data)) return data.data;
+            if (data && Array.isArray(data.items)) return data.items;
+            if (data && data.patient_id) return [data];
+            return [];
+        }
+
+        async function loadNotifications() {
+            const list = document.getElementById("notification-list");
+            const count = document.getElementById("notification-count");
+
+            try {
+                const response = await fetch(`${notificationApiUrl}?patient_id=${encodeURIComponent(currentPatientId)}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Notifications data:", data);
+
+                const notifications = normalizeNotificationResponse(data);
+
+                if (notifications.length === 0) {
+                    list.innerHTML = '<p class="notification-empty">Chưa có thông báo mới.</p>';
+                    count.textContent = "0";
+                    return;
+                }
+
+                const unreadNotifications = notifications.filter(item => item.status === "unread");
+                count.textContent = unreadNotifications.length;
+
+                list.innerHTML = notifications.map(item => `
+                    <div class="notification-item ${item.status === "unread" ? "unread" : ""}">
+                        <div class="notification-title">${item.title || "Thông báo"}</div>
+                        <div class="notification-message">${item.message || ""}</div>
+                        <div class="notification-time">${item.created_at || ""}</div>
+                    </div>
+                `).join("");
+
+            } catch (error) {
+                console.error("Notification fetch error:", error);
+                list.innerHTML = '<p class="notification-empty">Không thể tải thông báo. Hãy kiểm tra webhook hoặc CORS.</p>';
+                count.textContent = "0";
+            }
+        }
+
+        loadNotifications();
     function navigateTo(page) {
         const files = {
             home: 'patient_dashboard.html',
