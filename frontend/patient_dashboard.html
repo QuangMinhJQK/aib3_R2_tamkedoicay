@@ -836,9 +836,7 @@
                             <span class="metric-unit">mmol/L</span>
                         </div>
                         <div class="metric-status">
-                            <div class="status-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/9f66beb6-ba57-4182-a4e9-52312b4f1b3b" alt="Good">
-                            </div>
+                            <div class="status-icon">                            </div>
                             <span class="status-text">Tốt</span>
                         </div>
                     </div>
@@ -857,7 +855,6 @@
                         </div>
                         <div class="metric-status">
                             <div class="status-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/88b662cd-100b-43ff-8064-e89e68994845" alt="Status">
                             </div>
                             <span class="status-text-gray">Ổn định</span>
                         </div>
@@ -905,11 +902,12 @@
                 console.log(message);
             });
         });
-
+ 
         // AI Advisor section click
         document.querySelector('.ai-advisor-section').addEventListener('click', function() {
-            console.log('Mở AI Advisor...');
+            navigateTo('ai-advisor');
         });
+
         const currentPatientId = "3";
         const notificationApiUrl = "https://n8n.n2nai.io/webhook/get-patient-notifications";
 

@@ -402,6 +402,13 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-card:hover {
+            background: #eef2f3;
+            transform: translateY(-2px);
         }
 
         .ai-header {
@@ -746,10 +753,11 @@
                         </div>
 
                         <!-- AI Insight Card -->
-                        <div class="ai-card">
+                        <div class="ai-card" onclick="navigateTo('ai-advisor')">
                             <div class="ai-header">
                                 <div class="ai-icon">
-                                    <img src="https://www.figma.com/api/mcp/asset/bac0be9e-68ba-45b9-89b0-d2a03861ac53" alt="AI">
+                                    <img src="https://www.figma.com/api/mcp/asset/bac0be9e-68ba-45b9-89b0-d2a03861ac53"
+                                        alt="AI">
                                 </div>
                                 <div class="ai-label">AI ADVISOR</div>
                             </div>
@@ -804,6 +812,9 @@
             if (page === 'home') {
                 // Đã ở đây, không làm gì hoặc reload
                 return;
+            }
+            if (page === 'ai-advisor') {
+                window.location.href = 'patient_chatbot.html';
             }
         }
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,7 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%),
-                        linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+                linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
             overflow-x: hidden;
         }
 
@@ -566,6 +567,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -581,7 +583,8 @@
             <!-- Section Header -->
             <div class="section-header">
                 <h1 class="section-title">Người thân hỗ trợ</h1>
-                <p class="section-description">Người thân sẽ nhận được thông báo nếu bác chưa phản hồi lịch khám sau 48 giờ.</p>
+                <p class="section-description">Người thân sẽ nhận được thông báo nếu bác chưa phản hồi lịch khám sau 48
+                    giờ.</p>
             </div>
 
             <!-- Cards Grid -->
@@ -592,7 +595,8 @@
                         <div class="relative-info">
                             <div class="relative-icon-box">
                                 <div class="relative-icon">
-                                    <img src="https://www.figma.com/api/mcp/asset/0b5a8f8a-f07f-4248-9fca-a9fa43b571cd" alt="Relative">
+                                    <img src="https://www.figma.com/api/mcp/asset/0b5a8f8a-f07f-4248-9fca-a9fa43b571cd"
+                                        alt="Relative">
                                 </div>
                             </div>
                             <div class="relative-details">
@@ -600,9 +604,11 @@
                                 <div class="relative-phone">090xxxx123</div>
                             </div>
                         </div>
-                        <div class="connection-badge">
+                        <div class="connection-badge"
+                            style="display: flex; align-items: center; gap: 6px; background: #e6f4ea; padding: 4px 10px; border-radius: 999px; white-space: nowrap;">
                             <div class="badge-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/99414d00-0012-4eae-aad6-dc9165fa7a38" alt="Connected">
+                                <img src="https://www.figma.com/api/mcp/asset/99414d00-0012-4eae-aad6-dc9165fa7a38"
+                                    alt="Connected">
                             </div>
                             <span class="badge-text">Đã kết nối</span>
                         </div>
@@ -611,7 +617,8 @@
                     <div class="notification-setting">
                         <div class="notification-info">
                             <div class="notification-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/cc6a7925-20cf-43f4-b42f-675ee31d6f76" alt="Notification">
+                                <img src="https://www.figma.com/api/mcp/asset/cc6a7925-20cf-43f4-b42f-675ee31d6f76"
+                                    alt="Notification">
                             </div>
                             <div class="notification-text">Cho phép thông báo lịch tái khám</div>
                         </div>
@@ -625,7 +632,8 @@
                 <div class="add-relative-card">
                     <div class="add-icon-box">
                         <div class="add-icon">
-                            <img src="https://www.figma.com/api/mcp/asset/ae53e829-9bc0-4c50-ab6b-e4c9e65f9bb5" alt="Add">
+                            <img src="https://www.figma.com/api/mcp/asset/ae53e829-9bc0-4c50-ab6b-e4c9e65f9bb5"
+                                alt="Add">
                         </div>
                     </div>
                     <h2 class="add-title">Thêm người thân mới</h2>
@@ -637,7 +645,8 @@
                 <div class="privacy-card">
                     <div class="privacy-background"></div>
                     <div class="privacy-icon">
-                        <img src="https://www.figma.com/api/mcp/asset/f7cfc71f-2d2f-4d46-9f3c-e773baccfa3b" alt="Privacy">
+                        <img src="https://www.figma.com/api/mcp/asset/f7cfc71f-2d2f-4d46-9f3c-e773baccfa3b"
+                            alt="Privacy">
                     </div>
                     <div class="privacy-content">
                         <div class="privacy-title">Thông tin sức khỏe của bác luôn được bảo mật.</div>
@@ -653,7 +662,8 @@
                 </div>
                 <div class="how-content">
                     <div class="how-title">Cách thức hoạt động</div>
-                    <div class="how-description">Khi có lịch tái khám mới, hệ thống sẽ gửi thông báo ưu tiên cho bác. Nếu bác không xác nhận hoặc bỏ lỡ, người thân sẽ được thông báo để hỗ trợ bác kịp thời.</div>
+                    <div class="how-description">Khi có lịch tái khám mới, hệ thống sẽ gửi thông báo ưu tiên cho bác.
+                        Nếu bác không xác nhận hoặc bỏ lỡ, người thân sẽ được thông báo để hỗ trợ bác kịp thời.</div>
                 </div>
             </div>
         </div>
@@ -661,98 +671,106 @@
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item" onclick="navigateTo('home')">
-                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/eb0c64d9-29e8-4e8d-983b-6c367dfe1027" alt="Home"></div>
+                <div class="nav-icon"><img
+                        src="https://www.figma.com/api/mcp/asset/eb0c64d9-29e8-4e8d-983b-6c367dfe1027" alt="Home"></div>
                 <div class="nav-label">Trang chủ</div>
             </div>
             <div class="nav-item" onclick="navigateTo('appointments')">
-                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/fddc5cd0-0aef-4e16-a8bd-550720ce723b" alt="Appointments"></div>
+                <div class="nav-icon"><img
+                        src="https://www.figma.com/api/mcp/asset/fddc5cd0-0aef-4e16-a8bd-550720ce723b"
+                        alt="Appointments"></div>
                 <div class="nav-label">Lịch hẹn</div>
             </div>
             <div class="nav-item" onclick="navigateTo('ai-advisor')">
-                <div class="nav-icon"><img src="https://www.figma.com/api/mcp/asset/664646a0-34ad-4490-95ce-dbb6895f1738" alt="AI Advisor"></div>
+                <div class="nav-icon"><img
+                        src="https://www.figma.com/api/mcp/asset/664646a0-34ad-4490-95ce-dbb6895f1738" alt="AI Advisor">
+                </div>
                 <div class="nav-label">AI ADVISOR</div>
             </div>
             <div class="nav-item active" onclick="navigateTo('account')">
-                <div class="nav-profile"><img src="https://www.figma.com/api/mcp/asset/2068a450-d167-4836-a3bb-3bee13a569ab" alt="Profile"></div>
+                <div class="nav-profile"><img
+                        src="https://www.figma.com/api/mcp/asset/2068a450-d167-4836-a3bb-3bee13a569ab" alt="Profile">
+                </div>
                 <div class="nav-label">Tài khoản</div>
             </div>
         </div>
 
-    <script>
-        function toggleNotification(element) {
-            element.classList.toggle('off');
-            const isEnabled = !element.classList.contains('off');
-            console.log('Thông báo lịch tái khám:', isEnabled ? 'Bật' : 'Tắt');
-        }
-
-        function addRelative() {
-            console.log('Mở form thêm người thân...');
-        }
-
-        function navigateTo(page) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-            console.log('Điều hướng tới:', page);
-        }
-
-        // Initialize toggle switch (enabled by default)
-        window.addEventListener('load', function() {
-            const toggle = document.querySelector('.toggle-switch');
-            if (toggle && !toggle.classList.contains('off')) {
-                // Already enabled by default
+        <script>
+            function toggleNotification(element) {
+                element.classList.toggle('off');
+                const isEnabled = !element.classList.contains('off');
+                console.log('Thông báo lịch tái khám:', isEnabled ? 'Bật' : 'Tắt');
             }
-        });
-        
-        // ===== API Integration (Load data from backend) =====
-        async function loadSettingsData() {
-            try {
-                API.showLoading();
-                
-                // Fetch relatives list
-                const relatives = await API.user.getRelatives();
-                DataBinding.bindRelativesList(relatives);
-                
-                API.hideLoading();
-            } catch (error) {
-                console.error('Error loading settings data:', error);
-                API.showError(`Lỗi tải dữ liệu: ${error.message}`);
-                API.hideLoading();
+
+            function addRelative() {
+                console.log('Mở form thêm người thân...');
             }
-        }
-        
-        // Load data when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadSettingsData);
-        } else {
-            loadSettingsData();
-        }
-        
-        // Override toggleNotification to use API
-        async function toggleRelativeNotification(relativeId, toggleElement) {
-            try {
-                const isNowOn = !toggleElement.classList.contains('off');
-                await API.user.toggleNotification(relativeId, isNowOn);
-                toggleElement.classList.toggle('off');
-                console.log(`Thông báo cho người thân ${relativeId}: ${isNowOn ? 'Bật' : 'Tắt'}`);
-            } catch (error) {
-                console.error('Error toggling notification:', error);
-                API.showError(`Lỗi cập nhật: ${error.message}`);
-                toggleElement.classList.toggle('off'); // Revert change
+
+            function navigateTo(page) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                event.target.closest('.nav-item').classList.add('active');
+                console.log('Điều hướng tới:', page);
             }
-        }
-    </script>
-    <script>
-    function navigateTo(page) {
-        const files = {
-            home: 'patient_dashboard.html',
-            appointments: 'patient_appointments.html',
-            'ai-advisor': 'patient_chatbot.html',
-            account: 'patient_relative_settings.html'
-        };
-        if (files[page]) window.location.href = files[page];
-    }
-</script>
-<script src="api-client.js"></script>
-<script src="data-binding.js"></script>
+
+            // Initialize toggle switch (enabled by default)
+            window.addEventListener('load', function () {
+                const toggle = document.querySelector('.toggle-switch');
+                if (toggle && !toggle.classList.contains('off')) {
+                    // Already enabled by default
+                }
+            });
+
+            // ===== API Integration (Load data from backend) =====
+            async function loadSettingsData() {
+                try {
+                    API.showLoading();
+
+                    // Fetch relatives list
+                    const relatives = await API.user.getRelatives();
+                    DataBinding.bindRelativesList(relatives);
+
+                    API.hideLoading();
+                } catch (error) {
+                    console.error('Error loading settings data:', error);
+                    API.showError(`Lỗi tải dữ liệu: ${error.message}`);
+                    API.hideLoading();
+                }
+            }
+
+            // Load data when page loads
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadSettingsData);
+            } else {
+                loadSettingsData();
+            }
+
+            // Override toggleNotification to use API
+            async function toggleRelativeNotification(relativeId, toggleElement) {
+                try {
+                    const isNowOn = !toggleElement.classList.contains('off');
+                    await API.user.toggleNotification(relativeId, isNowOn);
+                    toggleElement.classList.toggle('off');
+                    console.log(`Thông báo cho người thân ${relativeId}: ${isNowOn ? 'Bật' : 'Tắt'}`);
+                } catch (error) {
+                    console.error('Error toggling notification:', error);
+                    API.showError(`Lỗi cập nhật: ${error.message}`);
+                    toggleElement.classList.toggle('off'); // Revert change
+                }
+            }
+        </script>
+        <script>
+            function navigateTo(page) {
+                const files = {
+                    home: 'patient_dashboard.html',
+                    appointments: 'patient_appointments.html',
+                    'ai-advisor': 'patient_chatbot.html',
+                    account: 'patient_relative_settings.html'
+                };
+                if (files[page]) window.location.href = files[page];
+            }
+        </script>
+        <script src="api-client.js"></script>
+        <script src="data-binding.js"></script>
 </body>
+
 </html>
