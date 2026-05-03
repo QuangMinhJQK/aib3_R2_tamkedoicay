@@ -24,6 +24,18 @@ class SectionDurations(BaseModel):
     progress: int = 120
     advice: int = 120
 
+
+class ClinicalMetricPoint(BaseModel):
+    date: str
+    value: float
+
+
+class ClinicalMetricSeries(BaseModel):
+    name: str
+    unit: str = ""
+    points: List[ClinicalMetricPoint] = Field(default_factory=list)
+    totalPoints: int = 0
+
 class MasterProps(BaseModel):
     patientName: str
     overallStatus: str
@@ -31,4 +43,5 @@ class MasterProps(BaseModel):
     advices: List[DoctorAdvice]
     sectionNarrations: List[SectionNarration] = Field(default_factory=list)
     sectionDurationsInFrames: SectionDurations = Field(default_factory=SectionDurations)
+    clinicalHistory: List[ClinicalMetricSeries] = Field(default_factory=list)
     totalDurationInFrames: int

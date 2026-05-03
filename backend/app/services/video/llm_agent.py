@@ -29,7 +29,7 @@ def extract_video_props(medical_record_text: str) -> MasterProps:
         api_key=os.getenv("OPENROUTER_API_KEY", "")
     )
     
-    model = os.getenv("REASONING_MODEL", "nvidia/nemotron-3-super-120b-a12b:free")
+    model = os.getenv("REASONING_MODEL", "openai/gpt-oss-120b:free")
     
     prompt = f"""
     You are a medical data extraction AI. Extract the following medical record into a structured JSON format.

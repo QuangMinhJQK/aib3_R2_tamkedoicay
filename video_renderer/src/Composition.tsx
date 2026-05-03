@@ -8,7 +8,15 @@ const getSectionNarration = (sectionNarrations: MasterProps["sectionNarrations"]
   return sectionNarrations?.find((item) => item.section === section)?.text || fallback;
 };
 
-export const MainComposition: React.FC<MasterProps> = ({ patientName, overallStatus, metrics, advices, sectionNarrations, sectionDurationsInFrames, totalDurationInFrames }) => {
+export const MainComposition: React.FC<MasterProps> = ({
+  patientName,
+  overallStatus,
+  metrics,
+  sectionNarrations,
+  sectionDurationsInFrames,
+  clinicalHistory,
+  totalDurationInFrames,
+}) => {
   const sectionDurations = sectionDurationsInFrames;
 
   const reportFrames = Math.max(1, sectionDurations?.report_status ?? 90);
@@ -77,7 +85,7 @@ export const MainComposition: React.FC<MasterProps> = ({ patientName, overallSta
           narration={progressNarration}
           accentColor="#ffd166"
           background="linear-gradient(135deg, #fffdf4 0%, #fff3d9 100%)"
-          panel={<Chart />}
+          panel={<Chart series={clinicalHistory} />}
         />
       </Sequence>
       

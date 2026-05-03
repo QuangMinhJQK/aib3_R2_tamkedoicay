@@ -1,4 +1,3 @@
-import { AbsoluteFill } from "remotion";
 import { HealthMetric } from "../types/MasterProps";
 
 export const HealthCard: React.FC<{ metrics: HealthMetric[] }> = ({ metrics }) => {

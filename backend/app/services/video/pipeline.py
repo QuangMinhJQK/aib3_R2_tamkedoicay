@@ -6,6 +6,9 @@ from backend.app.services.video.tts_engine import generate_audio_for_advice, bui
 from backend.app.services.video.remotion_runner import render_video
 from backend.app.services.video.cleanup import cleanup_job_files
 from backend.app.services.video.video_compositor import VideoCompositor
+from backend.app.services.metric_service import get_clinical_history
+from backend.app.services.ai_service import update_latest_video_url
+from backend.app.services import job_service
 
 TARGET_VIDEO_FRAMES = 900  # 30 seconds at 30 fps
 SECTION_ORDER = ["report_status", "health_metrics", "progress", "advice"]
@@ -63,14 +66,16 @@ def _build_section_text_map(props) -> dict:
     return section_map
 
 
-def _compute_section_slots(audio_frames: dict) -> dict:
+def _compute_section_slots(audio_frames: dict, min_section_frames: dict | None = None) -> dict:
     """
     Build a four-section timeline that totals exactly TARGET_VIDEO_FRAMES.
 
     The plan keeps all 4 sections visible and tries to avoid long empty spans.
     """
+    min_frames = min_section_frames or MIN_SECTION_FRAMES
+
     slots = {
-        section: max(int(audio_frames.get(section, 0)) + 30, MIN_SECTION_FRAMES[section])
+        section: max(int(audio_frames.get(section, 0)) + 30, min_frames[section])
         for section in SECTION_ORDER
     }
 
@@ -106,7 +111,7 @@ def _compute_section_slots(audio_frames: dict) -> dict:
     return slots
 
 
-def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) -> None:
+def run_video_pipeline(patient_id: int, medical_record_text: str, job_id: str, jobs_state: dict) -> None:
     temp_dir = os.path.join("output", job_id)
     os.makedirs(temp_dir, exist_ok=True)
     
@@ -115,6 +120,27 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
         
         # Step 1: Extract data using LLM
         props = extract_video_props(medical_record_text)
+
+        # Step 1b: Fetch clinical chart history separately so it can scale independently.
+        # Use a wider window (90 days) to capture recent points from DB when data is sparse.
+        raw_history = get_clinical_history(patient_id, days=90)
+        # Convert raw dicts into Pydantic ClinicalMetricSeries instances to avoid
+        # Pydantic serialization warnings when dumping MasterProps to JSON.
+        try:
+            from backend.app.models.video_schema import ClinicalMetricSeries as PMSeries
+            from backend.app.models.video_schema import ClinicalMetricPoint as PMPoint
+
+            converted = []
+            for s in raw_history or []:
+                points = [PMPoint(**p) for p in s.get("points", [])]
+                converted.append(
+                    PMSeries(name=s.get("name", ""), unit=s.get("unit", ""), points=points, totalPoints=s.get("totalPoints", 0))
+                )
+            props.clinicalHistory = converted
+        except Exception:
+            # Fallback: assign raw dicts (pydantic will attempt conversion but
+            # may emit warnings). This keeps pipeline robust if models change.
+            props.clinicalHistory = raw_history
         
         # Step 2: Build section narrations for 4 segments and generate TTS.
         section_texts = _build_section_text_map(props)
@@ -130,7 +156,16 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
 
         # Compute section slots to fill an exact 30-second video.
         audio_frames = {s: section_durations[s]["duration_frames"] for s in SECTION_ORDER}
-        section_slots = _compute_section_slots(audio_frames)
+
+        # Adjust minimum frame allocation for health_metrics based on number of metric series.
+        series_count = len(getattr(props, "clinicalHistory", []) or [])
+        # per_series_frames: 90 frames = 3 seconds at 30fps per additional series
+        per_series_frames = int(os.getenv("VIDEO_PER_SERIES_FRAMES", "90"))
+        desired_health_min = MIN_SECTION_FRAMES["health_metrics"] + per_series_frames * max(0, series_count - 1)
+        min_section_frames_override = dict(MIN_SECTION_FRAMES)
+        min_section_frames_override["health_metrics"] = max(MIN_SECTION_FRAMES["health_metrics"], desired_health_min)
+
+        section_slots = _compute_section_slots(audio_frames, min_section_frames_override)
         total_frames = TARGET_VIDEO_FRAMES
 
         # Update sectionNarrations with actual durations for traceability.
@@ -196,15 +231,27 @@ def run_video_pipeline(medical_record_text: str, job_id: str, jobs_state: dict) 
             subtitle_path=None,
             font_size=24
         )
+        # Persist path to the generated file (store relative file path under output/)
+        video_file_path = os.path.join("output", f"{job_id}.mp4")
+        # Update latest medical_record.ai_video_url with the file path
+        if not update_latest_video_url(patient_id, video_file_path):
+            raise RuntimeError("Video was created but ai_video_url could not be updated")
+
+        # Update job table as well
+        job_service.update_job(job_id, "COMPLETED", video_url=video_file_path)
         
         jobs_state[job_id] = {
             "status": "COMPLETED",
-            "video_url": f"/static/videos/{job_id}.mp4"
+            "video_url": video_file_path
         }
         
     except Exception as e:
         print(f"Video Pipeline Error: {e}")
         jobs_state[job_id] = {"status": "FAILED", "error": str(e)}
+        try:
+            job_service.update_job(job_id, "FAILED", error=str(e))
+        except Exception:
+            pass
     finally:
         cleanup_job_files(temp_dir)
 

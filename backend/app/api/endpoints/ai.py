@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 
 from backend.app.schemas.common import APIResponse
-from backend.app.schemas.ai import ChatRequest
+from backend.app.schemas.ai import ChatRequest, VideoUrlUpdateRequest
 from backend.app.services import ai_service
 
 router = APIRouter(prefix="/api/v1/ai", tags=["AI Advisor & Chatbot"])
@@ -39,3 +39,11 @@ async def get_video_advice(patient_id: int = Query(1)):
     if not data:
         return APIResponse(data=None, message="Chưa có video tư vấn")
     return APIResponse(data=data)
+
+
+@router.put("/video-url", response_model=APIResponse)
+async def update_video_url(body: VideoUrlUpdateRequest):
+    updated = ai_service.update_latest_video_url(body.patient_id, body.video_url)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Không tìm thấy medical record để cập nhật video")
+    return APIResponse(message="Đã cập nhật ai_video_url thành công")

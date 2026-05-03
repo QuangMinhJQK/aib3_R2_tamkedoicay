@@ -22,6 +22,22 @@ async def get_trend(
     return APIResponse(data=data)
 
 
+@router.get("/api/v1/metrics/history", response_model=APIResponse)
+async def get_history(
+    patient_id: int = Query(1),
+    days: int = Query(30),
+    max_series: int = Query(4),
+    max_points_per_series: int = Query(8),
+):
+    data = metric_service.get_clinical_history(
+        patient_id=patient_id,
+        days=days,
+        max_series=max_series,
+        max_points_per_series=max_points_per_series,
+    )
+    return APIResponse(data=data)
+
+
 @router.get("/api/v1/medications/status", response_model=APIResponse)
 async def get_medication_status(patient_id: int = Query(1)):
     data = metric_service.get_medication_status(patient_id)

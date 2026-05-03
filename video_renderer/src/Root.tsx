@@ -7,7 +7,7 @@ export const RemotionRoot: React.FC = () => {
     <>
       <Composition
         id="CareLoopVideo"
-        component={MainComposition as React.FC<any>}
+        component={MainComposition as unknown as React.FC<Record<string, unknown>>}
         durationInFrames={900}
         fps={30}
         width={1280}
@@ -18,6 +18,7 @@ export const RemotionRoot: React.FC = () => {
           metrics: [],
           advices: [],
           sectionNarrations: [],
+          clinicalHistory: [],
           sectionDurationsInFrames: {
             report_status: 180,
             health_metrics: 240,

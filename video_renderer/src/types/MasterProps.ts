@@ -10,6 +10,18 @@ export interface DoctorAdvice {
   audioDurationInFrames: number;
 }
 
+export interface ClinicalMetricPoint {
+  date: string;
+  value: number;
+}
+
+export interface ClinicalMetricSeries {
+  name: string;
+  unit?: string;
+  points: ClinicalMetricPoint[];
+  totalPoints: number;
+}
+
 export interface SectionNarration {
   section: 'report_status' | 'health_metrics' | 'progress' | 'advice';
   text: string;
@@ -22,6 +34,7 @@ export interface MasterProps {
   metrics: HealthMetric[];
   advices: DoctorAdvice[];
   sectionNarrations?: SectionNarration[];
+  clinicalHistory?: ClinicalMetricSeries[];
   sectionDurationsInFrames?: {
     report_status: number;
     health_metrics: number;

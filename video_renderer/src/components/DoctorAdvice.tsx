@@ -1,4 +1,3 @@
-import { AbsoluteFill } from "remotion";
 import { DoctorAdvice as DoctorAdviceType } from "../types/MasterProps";
 
 export const DoctorAdvice: React.FC<{ advices: DoctorAdviceType[] }> = ({ advices }) => {
