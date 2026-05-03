@@ -13,8 +13,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%),
-                        linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+            background: #f8f9fa;
             overflow-x: hidden;
         }
 
@@ -24,7 +23,7 @@
             flex-direction: column;
             position: relative;
             margin: 0 auto;
-            background: linear-gradient(90deg, #f8f9fa 0%, #f8f9fa 100%);
+            background: #f8f9fa;
             min-height: 100vh;
         }
 
@@ -60,7 +59,6 @@
             width: 40px;
             height: 40px;
             border-radius: 9999px;
-            background: rgba(255, 255, 255, 0);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -77,14 +75,13 @@
         .main-content {
             display: flex;
             flex-direction: column;
-            gap: 32px;
+            gap: 24px;
             padding: 96px 24px 128px 24px;
             overflow-y: auto;
             flex: 1;
-            margin-bottom: 90px; /* Để tránh bottom nav che nội dung */
+            margin-bottom: 90px;
         }
 
-        /* AI Advisor Intro */
         .ai-intro {
             display: flex;
             flex-direction: column;
@@ -109,7 +106,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .ai-icon img {
@@ -140,12 +137,15 @@
             text-align: center;
         }
 
-        /* Message Bubble */
         .message-container {
             display: flex;
             gap: 16px;
             align-items: flex-start;
             width: 100%;
+        }
+
+        .message-container.user {
+            justify-content: flex-end;
         }
 
         .message-avatar {
@@ -157,6 +157,7 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            font-size: 20px;
         }
 
         .message-avatar img {
@@ -170,9 +171,16 @@
             backdrop-filter: blur(10px);
             border-left: 4px solid #1b6d24;
             border-radius: 0 16px 16px 16px;
-            padding: 20px 44.72px 20px 24px;
+            padding: 16px 20px;
             max-width: 290px;
             box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-container.user .message-bubble {
+            border-left: none;
+            border-right: 4px solid #004891;
+            border-radius: 16px 0 16px 16px;
+            background: #eaf2ff;
         }
 
         .message-text {
@@ -181,9 +189,20 @@
             color: #191c1d;
             line-height: 26px;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
-        /* Quick Suggestions */
+        .message-meta {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .audio-player {
+            margin-top: 10px;
+            width: 100%;
+        }
+
         .suggestions-container {
             display: flex;
             flex-direction: column;
@@ -227,14 +246,21 @@
             border-color: rgba(0, 72, 141, 0.2);
         }
 
-        .suggestion-button:active {
-            background: #dfe0e1;
+        .typing-indicator {
+            display: none;
+            font-size: 13px;
+            color: #64748b;
+            padding-left: 56px;
+            margin-top: -8px;
         }
 
-        /* Message Input */
+        .typing-indicator.show {
+            display: block;
+        }
+
         .message-input-container {
             position: fixed;
-            bottom: 100px; /* Tăng lên để không bị bottom nav che */
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             width: 390px;
@@ -251,7 +277,7 @@
             gap: 8px;
             align-items: center;
             padding: 9px;
-            box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .input-plus-button {
@@ -264,7 +290,6 @@
             justify-content: center;
             cursor: pointer;
             padding: 0;
-            transition: all 0.3s ease;
         }
 
         .plus-icon {
@@ -293,8 +318,9 @@
             color: #64748b;
         }
 
-        .input-voice-button {
-            width: 25px;
+        .input-voice-button,
+        .input-send-button {
+            width: 34px;
             height: 48px;
             border-radius: 16px;
             background: linear-gradient(117.51deg, #004891 0%, #005fb8 100%);
@@ -304,12 +330,21 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -2px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
             padding: 0;
+            color: white;
+            font-size: 16px;
         }
 
-        .input-voice-button:hover {
-            opacity: 0.9;
+        .input-voice-button.recording {
+            background: linear-gradient(117.51deg, #dc2626 0%, #ef4444 100%);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.65; }
+            100% { opacity: 1; }
         }
 
         .voice-icon {
@@ -323,7 +358,6 @@
             object-fit: contain;
         }
 
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -402,38 +436,10 @@
             object-fit: cover;
         }
 
-        /* Scrollbar styling */
-        .main-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .main-content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .main-content::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 3px;
-        }
-
-        .main-content::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 480px) {
-            .container {
-                width: 100%;
-            }
-
-            .header {
-                width: 100%;
-            }
-
-            .message-input-container {
-                width: 100%;
-            }
-
+            .container,
+            .header,
+            .message-input-container,
             .bottom-nav {
                 width: 100%;
             }
@@ -442,7 +448,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div class="header-content">
                 <div class="header-title">Trò chuyện với Trợ lý ảo của bạn</div>
@@ -452,9 +457,7 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- AI Advisor Introduction -->
+        <div class="main-content" id="chatContainer">
             <div class="ai-intro">
                 <div class="ai-icon-box">
                     <div class="ai-icon">
@@ -465,28 +468,27 @@
                 <p class="ai-subtitle">TRỢ LÝ SỨC KHỎE CÁ NHÂN</p>
             </div>
 
-            <!-- AI Message -->
             <div class="message-container">
                 <div class="message-avatar">
                     <img src="https://www.figma.com/api/mcp/asset/69238e48-18a5-4956-8077-65ff7ca7a8b7" alt="AI">
                 </div>
                 <div class="message-bubble">
-                    <p class="message-text">Chào bác Hùng, con có thể giúp gì cho bác về lịch khám hoặc đơn thuốc hôm nay ạ?</p>
+                    <p class="message-text">Chào bác, con có thể giúp gì cho bác về lịch khám hoặc đơn thuốc hôm nay ạ?</p>
                 </div>
             </div>
 
-            <!-- Quick Suggestions -->
-            <div class="suggestions-container">
+            <div class="suggestions-container" id="suggestions">
                 <div class="suggestions-label">GỢI Ý CHO BÁC</div>
                 <div class="suggestions-list">
-                    <button class="suggestion-button" onclick="askQuestion('Khi nào bác tái khám?')">Khi nào bác tái khám?</button>
-                    <button class="suggestion-button" onclick="askQuestion('Cách dùng thuốc Metformin')">Cách dùng thuốc Metformin</button>
-                    <button class="suggestion-button" onclick="askQuestion('Giải thích chỉ số đường huyết')">Giải thích chỉ số đường huyết</button>
+                    <button class="suggestion-button" onclick="askQuestion('Khi nào tôi tái khám?')">Khi nào tôi tái khám?</button>
+                    <button class="suggestion-button" onclick="askQuestion('Tôi đang dùng thuốc gì?')">Tôi đang dùng thuốc gì?</button>
+                    <button class="suggestion-button" onclick="askQuestion('Tôi cần lưu ý gì sau khám?')">Tôi cần lưu ý gì sau khám?</button>
                 </div>
             </div>
+
+            <div class="typing-indicator" id="typingIndicator">AI Advisor đang trả lời...</div>
         </div>
 
-        <!-- Message Input Area -->
         <div class="message-input-container">
             <div class="input-box">
                 <button class="input-plus-button" onclick="addAttachment()" title="Thêm tệp đính kèm">
@@ -494,14 +496,18 @@
                         <img src="https://www.figma.com/api/mcp/asset/631d016d-fdcf-485c-bf25-9d9b55b2f4f0" alt="Add">
                     </div>
                 </button>
-                <input 
-                    type="text" 
-                    class="input-field" 
-                    placeholder="Nhập câu hỏi của bác..." 
+
+                <input
+                    type="text"
+                    class="input-field"
+                    placeholder="Nhập câu hỏi của bác..."
                     id="messageInput"
                     onkeypress="handleKeyPress(event)"
                 >
-                <button class="input-voice-button" onclick="startVoiceInput()" title="Ghi âm">
+
+                <button class="input-send-button" onclick="sendTextFromInput()" title="Gửi">➤</button>
+
+                <button class="input-voice-button" id="voiceButton" onclick="startVoiceInput()" title="Ghi âm">
                     <div class="voice-icon">
                         <img src="https://www.figma.com/api/mcp/asset/b49685f0-59f4-4fb1-9714-746c03fb1cbc" alt="Voice">
                     </div>
@@ -509,7 +515,6 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation (bổ sung) -->
         <div class="bottom-nav">
             <div class="nav-item" onclick="navigateTo('home')">
                 <div class="nav-icon">
@@ -539,68 +544,248 @@
     </div>
 
     <script>
-        // Hàm điều hướng giữa các file
+        const N8N_WEBHOOK_URL = "https://n8n.n2nai.io/webhook/chatbot-voice-advisor"
+        const PATIENT_ID = new URLSearchParams(window.location.search).get('patient_id') || "771";
+
+
         function navigateTo(page) {
             const files = {
                 home: 'patient_dashboard.html',
                 appointments: 'patient_appointments.html',
-                'ai-advisor': 'patient_chatbot.html', // chính là file này
+                'ai-advisor': 'patient_chatbot.html',
                 account: 'patient_relative_settings.html'
             };
+
             if (files[page] && files[page] !== window.location.pathname.split('/').pop()) {
                 window.location.href = files[page];
             }
         }
 
-        // Các hàm chat giữ nguyên
         function askQuestion(question) {
-            const input = document.getElementById('messageInput');
-            input.value = question;
-            console.log('Gửi câu hỏi:', question);
+            document.getElementById('messageInput').value = question;
+            sendMessage({
+                input_type: "text",
+                question,
+                need_voice: false
+            });
         }
 
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
-                const message = document.getElementById('messageInput').value.trim();
-                if (message) {
-                    sendMessage(message);
-                    document.getElementById('messageInput').value = '';
-                }
+                sendTextFromInput();
             }
         }
 
-        function sendMessage(message) {
-            console.log('Gửi tin nhắn:', message);
-            addUserMessage(message);
+        function sendTextFromInput() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            input.value = '';
+
+            sendMessage({
+                input_type: "text",
+                question: message,
+                need_voice: false
+            });
+        }
+
+        async function sendMessage({ input_type, question, need_voice }) {
+            addUserMessage(question);
+            setTyping(true);
+
+            const payload = {
+                patient_id: PATIENT_ID,
+                input_type,
+                question,
+                need_voice
+            };
+
+            try {
+                const res = await fetch(N8N_WEBHOOK_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const result = await res.json();
+                const data = Array.isArray(result) ? result[0] : result;
+
+                const answer = data.answer_text || data.answer || "Xin lỗi, hệ thống chưa có phản hồi.";
+addBotMessage(answer, data);
+
+if (need_voice === true) {
+    if (data.audio_url) {
+        playAudio(data.audio_url);
+    } else {
+        speakText(answer);
+    }
+}
+
+            } catch (error) {
+                console.error("Lỗi gọi n8n:", error);
+                addBotMessage("Xin lỗi, hiện hệ thống chưa thể kết nối với trợ lý ảo. Bác thử lại sau nhé.");
+            } finally {
+                setTyping(false);
+            }
         }
 
         function addUserMessage(message) {
-            console.log('Thêm tin nhắn người dùng:', message);
+            const container = document.getElementById('chatContainer');
+
+            const html = `
+                <div class="message-container user">
+                    <div class="message-bubble">
+                        <p class="message-text">${escapeHtml(message)}</p>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        function addBotMessage(message, meta = {}) {
+            const container = document.getElementById('chatContainer');
+
+            const metaText = meta.intent
+                ? `<div class="message-meta">Intent: ${escapeHtml(meta.intent)} · Action: ${escapeHtml(meta.next_action || '')}</div>`
+                : '';
+
+            const audioHtml = meta.audio_url
+                ? `<audio class="audio-player" controls src="${escapeHtml(meta.audio_url)}"></audio>`
+                : '';
+
+            const html = `
+                <div class="message-container">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">
+                        <p class="message-text">${escapeHtml(message)}</p>
+                        ${metaText}
+                        ${audioHtml}
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        function setTyping(show) {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.classList.toggle('show', show);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
         }
 
         function addAttachment() {
-            console.log('Thêm tệp đính kèm...');
+            alert('Tính năng đính kèm sẽ được phát triển sau.');
         }
 
         function startVoiceInput() {
-            console.log('Bắt đầu ghi âm...');
-            if ('webkitSpeechRecognition' in window) {
-                const recognition = new webkitSpeechRecognition();
-                recognition.lang = 'vi-VN';
-                recognition.start();
-                recognition.onresult = function(event) {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript;
-                    }
-                    document.getElementById('messageInput').value = transcript;
-                };
-                recognition.onerror = function(event) {
-                    console.error('Lỗi ghi âm:', event.error);
-                };
-            } else {
-                alert('Trình duyệt của bạn không hỗ trợ nhập giọng nói');
-            }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const voiceButton = document.getElementById('voiceButton');
+    if (!SpeechRecognition) {
+        alert('Trình duyệt chưa hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome.');
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    voiceButton.classList.add('recording');
+    console.log("Đang nghe...");
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        let transcript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+
+        transcript = transcript.trim();
+        console.log("Transcript:", transcript);
+
+        document.getElementById('messageInput').value = transcript;
+
+        if (event.results[event.results.length - 1].isFinal && transcript) {
+            sendMessage({
+                input_type: "text",
+                question: transcript,
+                need_voice: true
+            });
+        }
+    };
+
+    recognition.onerror = function(event) {
+    console.error("Speech recognition error:", event.error);
+
+    if (event.error === "no-speech") {
+        alert("Không nghe thấy giọng nói. Bạn bấm mic rồi nói ngay, nói rõ hơn hoặc kiểm tra micro nhé.");
+    } else if (event.error === "not-allowed") {
+        alert("Bạn chưa cấp quyền micro cho trình duyệt.");
+    } else if (event.error === "network") {
+        alert("Lỗi mạng khi nhận diện giọng nói. Thử dùng Chrome và kiểm tra internet.");
+    } else {
+        alert("Lỗi ghi âm: " + event.error);
+    }
+};
+
+    recognition.onend = function() {
+        console.log("Dừng nghe");
+        voiceButton.classList.remove('recording');
+    };
+}
+
+        function playAudio(url) {
+            const audio = new Audio(url);
+            audio.play().catch(err => {
+                console.warn("Không thể tự phát audio:", err);
+            });
+        }
+        function speakText(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+
+    const vietnameseVoice = voices.find(v => v.lang === 'vi-VN')
+        || voices.find(v => v.lang.startsWith('vi'));
+
+    if (vietnameseVoice) {
+        utterance.voice = vietnameseVoice;
+    }
+
+    utterance.lang = 'vi-VN';
+    utterance.rate = 0.95;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+}
+        function escapeHtml(text) {
+            return String(text ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
         }
 
         window.addEventListener('load', function() {
