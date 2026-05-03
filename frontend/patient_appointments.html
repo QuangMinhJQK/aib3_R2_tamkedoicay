@@ -828,8 +828,14 @@
                 <!-- Video Advisor Section -->
                 <div class="video-advisor">
                     <div class="video-container">
-                        <img src="https://www.figma.com/api/mcp/asset/73dc78ed-613a-415d-912b-0f0b2fc606ad" alt="AI Doctor" class="video-image">
-                        <div class="video-overlay">
+                        <video id="instructionVideo" width="100%" height="100%" controls style="display: none; object-fit: cover;">
+                            <source src="http://localhost:8000/static/videos/d8f03583-7878-443a-bc3f-5ee025b43ca0.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div id="videoPlaceholder" class="video-image" style="background: black; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <!-- Placeholder for black background -->
+                        </div>
+                        <div class="video-overlay" id="videoOverlay">
                             <div class="play-button" onclick="playVideo()">
                                 <div class="play-icon">
                                     <img src="https://www.figma.com/api/mcp/asset/db1ae0dc-a1f4-48e5-afa2-1bc5df55f48a" alt="Play">
@@ -850,11 +856,11 @@
                             <p class="video-description">Bác sĩ AI của chúng tôi đã tổng hợp các hướng dẫn cụ thể dựa trên chỉ số 7.2 mmol/L của bạn. Xem ngay để tối ưu hóa lộ trình điều trị.</p>
                         </div>
 
-                        <button class="watch-button" onclick="watchVideo()">
+                        <button id="mainVideoBtn" class="watch-button" onclick="handleVideoAction()">
                             <div class="button-icon">
-                                <img src="https://www.figma.com/api/mcp/asset/1242cb2d-c7eb-4d3d-a9ad-d0868c655fce" alt="Watch">
+                                <img src="https://www.figma.com/api/mcp/asset/1242cb2d-c7eb-4d3d-a9ad-d0868c655fce" alt="Action">
                             </div>
-                            <span>Xem video dặn dò</span>
+                            <span id="mainVideoBtnText">Xem video dặn dò</span>
                         </button>
                     </div>
                 </div>
@@ -883,11 +889,18 @@
 
     <script>
         function playVideo() {
-            console.log('Mở video dặn dò...');
+            const video = document.getElementById('instructionVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            const overlay = document.getElementById('videoOverlay');
+            
+            video.style.display = 'block';
+            placeholder.style.display = 'none';
+            overlay.style.display = 'none';
+            video.play();
         }
 
         function watchVideo() {
-            console.log('Bắt đầu xem video...');
+            playVideo();
         }
 
         function navigateTo(page) {
@@ -938,6 +951,8 @@
         }
     </script>
     <script>
+    const API_BASE_URL = 'http://localhost:8000';
+
     function navigateTo(page) {
         const files = {
             home: 'patient_dashboard.html',
@@ -947,6 +962,115 @@
         };
         if (files[page]) window.location.href = files[page];
     }
+
+    let currentVideoUrl = null;
+
+    // Modified for strict demo flow
+    async function checkVideoStatus() {
+        const patientId = '1'; 
+        const watchBtn = document.getElementById('mainVideoBtn');
+        const watchBtnText = document.getElementById('mainVideoBtnText');
+        
+        const isGenerating = localStorage.getItem('is_generating_video') === 'true';
+        const isCompleted = localStorage.getItem('demo_completed') === 'true';
+
+        if (isCompleted) {
+            // Already finished the flow - Stay still here
+            await fetchVideoUrl();
+            watchBtnText.innerText = 'Xem video dặn dò';
+            watchBtn.disabled = false;
+            watchBtn.style.background = '#00488d';
+        } else if (isGenerating) {
+            // Currently in the 1.5s waiting period
+            watchBtnText.innerText = 'Đang tạo video...';
+            watchBtn.disabled = true;
+            watchBtn.style.background = '#ccc';
+        } else {
+            // Step 1: Initial state
+            watchBtnText.innerText = 'Tạo video dặn dò';
+            watchBtn.disabled = false;
+            watchBtn.style.background = '#00488d';
+        }
+    }
+
+    async function fetchVideoUrl() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/videos/`);
+            if (response.ok) {
+                const jobs = await response.json();
+                const completedJob = jobs.find(job => job.patient_id == 1 && job.status === 'COMPLETED');
+                if (completedJob) {
+                    const fileName = completedJob.video_url.split(/[\\/]/).pop();
+                    currentVideoUrl = `${API_BASE_URL}/static/videos/${fileName}`;
+                }
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function handleVideoAction() {
+        if (localStorage.getItem('demo_completed') === 'true' && currentVideoUrl) {
+            showVideoPlayer();
+            document.getElementById('instructionVideo').play();
+        } else {
+            await triggerVideoGeneration();
+        }
+    }
+
+    async function triggerVideoGeneration() {
+        const watchBtn = document.getElementById('mainVideoBtn');
+        const watchBtnText = document.getElementById('mainVideoBtnText');
+        
+        // Step 2: Switch to "Creating" state
+        watchBtn.disabled = true;
+        watchBtnText.innerText = 'Đang tạo video...';
+        localStorage.setItem('is_generating_video', 'true');
+        localStorage.setItem('demo_completed', 'false');
+
+        // Background call
+        fetch(`${API_BASE_URL}/api/v1/videos/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ patient_id: 1 })
+        });
+
+        // Step 3: Wait exactly 1.5 seconds
+        setTimeout(async () => {
+            await fetchVideoUrl(); 
+            localStorage.setItem('is_generating_video', 'false');
+            localStorage.setItem('demo_completed', 'true');
+            
+            watchBtnText.innerText = 'Xem video dặn dò';
+            watchBtn.disabled = false;
+            watchBtn.style.background = '#00488d'; 
+        }, 1500);
+    }
+
+    function showVideoPlayer() {
+        if (!currentVideoUrl) return;
+        const videoElement = document.getElementById('instructionVideo');
+        const placeholder = document.getElementById('videoPlaceholder');
+        const overlay = document.getElementById('videoOverlay');
+        const watchBtn = document.getElementById('mainVideoBtn');
+        const watchBtnText = document.getElementById('mainVideoBtnText');
+
+        videoElement.querySelector('source').src = currentVideoUrl;
+        videoElement.load();
+        
+        videoElement.style.display = 'block';
+        placeholder.style.display = 'none';
+        overlay.style.display = 'none';
+        
+        watchBtnText.innerText = 'Đang phát video';
+        watchBtn.disabled = true;
+        watchBtn.style.background = '#ccc';
+    }
+
+    window.addEventListener('load', () => {
+        // RESET states on every load so we ALWAYS start with "Tạo video dặn dò"
+        localStorage.removeItem('is_generating_video'); 
+        localStorage.removeItem('demo_completed');
+        checkVideoStatus();
+    });
 </script>
 <script src="api-client.js"></script>
 <script src="data-binding.js"></script>
