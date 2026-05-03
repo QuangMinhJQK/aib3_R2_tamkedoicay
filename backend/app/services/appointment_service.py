@@ -95,7 +95,8 @@ def get_last_summary(patient_id: int) -> dict | None:
     with get_db() as conn:
         row = conn.execute(
             """
-            SELECT mr.diagnosis, mr.doctor_notes, mr.prescriptions,
+            SELECT mr.id AS record_id,
+                   mr.diagnosis, mr.doctor_notes, mr.prescriptions,
                    mr.next_appointment_date, mr.ai_summary, mr.created_at,
                    a.appointment_datetime,
                    p.full_name AS patient_full_name,
@@ -122,13 +123,55 @@ def get_last_summary(patient_id: int) -> dict | None:
     else:
         overall_status = "Good"
 
+    cached = _try_parse_cached_summary(row["ai_summary"])
+    if cached:
+        logger.info("Returning cached AI summary for patient %s", patient_id)
+        return {
+            "patientName": row["patient_full_name"],
+            "overallStatus": overall_status,
+            "date": visit_date,
+            "clinical_summary": cached["clinical_summary"],
+            "metrics": cached["metrics"],
+            "doctor_notes": cached["doctor_notes"],
+            "warning": cached.get("warning"),
+            "next_steps": cached.get("next_steps"),
+            "next_appointment_date": row["next_appointment_date"],
+        }
+
+    with get_db() as conn:
+        metrics_rows = conn.execute(
+            """
+            SELECT metric_name, metric_value, unit
+            FROM clinical_metrics
+            WHERE patient_id = ?
+            ORDER BY recorded_at DESC
+            LIMIT 8
+            """,
+            (patient_id,),
+        ).fetchall()
+
+    raw_metrics = [f"{m['metric_name']}: {m['metric_value']} {m['unit']}" for m in metrics_rows]
+
+    logger.info("Generating AI summary via Gemini for patient %s", patient_id)
+    ai_result = generate_clinical_summary(
+        patient_name=row["patient_full_name"],
+        diagnosis=row["diagnosis"],
+        doctor_notes=row["doctor_notes"],
+        prescriptions=row["prescriptions"],
+        metrics=raw_metrics,
+        next_appointment_date=row["next_appointment_date"],
+    )
+
+    _save_ai_summary(row["record_id"], json.dumps(ai_result, ensure_ascii=False))
+
     return {
         "patientName": row["patient_full_name"],
         "overallStatus": overall_status,
         "date": visit_date,
-        "clinical_summary": row["ai_summary"] or row["diagnosis"],
-        "doctor_notes": row["doctor_notes"],
-        "warning": None,
-        "next_steps": f"Uống thuốc theo đơn: {row['prescriptions']}" if row["prescriptions"] else None,
+        "clinical_summary": ai_result["clinical_summary"],
+        "metrics": ai_result["metrics"],
+        "doctor_notes": ai_result["doctor_notes"],
+        "warning": ai_result.get("warning"),
+        "next_steps": ai_result.get("next_steps"),
         "next_appointment_date": row["next_appointment_date"],
     }
